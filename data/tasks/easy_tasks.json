@@ -1,0 +1,152 @@
+[
+  {
+    "id": "easy_001",
+    "subject": "CONGRATULATIONS! You've WON $1,000,000!!!",
+    "body": "Dear valued customer, you have been selected as the winner of our monthly sweepstakes. Click here to claim your prize immediately. Act now before this offer expires!",
+    "sender": "prizes@lottery-win-now.com",
+    "gold_intents": ["spam"],
+    "gold_priority": "low",
+    "gold_action": "ignore",
+    "gold_response": ""
+  },
+  {
+    "id": "easy_002",
+    "subject": "Team meeting tomorrow at 10 AM",
+    "body": "Hi team,\n\nJust a reminder that we have our weekly standup tomorrow at 10 AM in Conference Room B. Please come prepared with your updates.\n\nBest,\nSarah",
+    "sender": "sarah.chen@company.com",
+    "gold_intents": ["meeting_request"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Thanks Sarah, I'll be there at 10 AM with my updates ready."
+  },
+  {
+    "id": "easy_003",
+    "subject": "Invoice #4821 attached",
+    "body": "Hello,\n\nPlease find attached invoice #4821 for the consulting services rendered in February. Payment is due within 30 days.\n\nRegards,\nAccounting Department",
+    "sender": "billing@vendor-services.com",
+    "gold_intents": ["information_sharing"],
+    "gold_priority": "medium",
+    "gold_action": "forward",
+    "gold_response": "Forwarding this invoice to the finance team for processing."
+  },
+  {
+    "id": "easy_004",
+    "subject": "RE: Your subscription has been renewed",
+    "body": "This is a confirmation that your annual subscription to CloudTools Pro has been renewed. Your next billing date is March 15, 2027. No action required.",
+    "sender": "noreply@cloudtools.io",
+    "gold_intents": ["newsletter"],
+    "gold_priority": "low",
+    "gold_action": "ignore",
+    "gold_response": ""
+  },
+  {
+    "id": "easy_005",
+    "subject": "Can you review my pull request?",
+    "body": "Hey,\n\nI just opened PR #342 for the authentication refactor. It's a pretty small change — just swapped the JWT library. Could you take a look when you get a chance?\n\nThanks!",
+    "sender": "dev.mike@company.com",
+    "gold_intents": ["feedback_request"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Sure Mike, I'll review PR #342 this afternoon. Thanks for the heads up."
+  },
+  {
+    "id": "easy_006",
+    "subject": "Happy Birthday! 🎂",
+    "body": "Happy birthday! Hope you have an amazing day. Let's grab lunch soon to celebrate!",
+    "sender": "lisa.park@company.com",
+    "gold_intents": ["social"],
+    "gold_priority": "low",
+    "gold_action": "reply",
+    "gold_response": "Thank you Lisa! That's so kind. Would love to catch up over lunch — how about Friday?"
+  },
+  {
+    "id": "easy_007",
+    "subject": "System maintenance this weekend",
+    "body": "Dear users,\n\nPlanned maintenance will occur Saturday 2 AM - 6 AM EST. Services may be intermittently unavailable. No action required on your part.\n\nIT Operations",
+    "sender": "it-ops@company.com",
+    "gold_intents": ["information_sharing"],
+    "gold_priority": "low",
+    "gold_action": "ignore",
+    "gold_response": ""
+  },
+  {
+    "id": "easy_008",
+    "subject": "Welcome to the team!",
+    "body": "Hi,\n\nI'm James, the new data engineer joining your team starting next Monday. Looking forward to meeting everyone! Is there anything I should prepare before my first day?\n\nBest,\nJames Rivera",
+    "sender": "james.rivera@company.com",
+    "gold_intents": ["introduction", "question"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Welcome James! Great to have you on the team. No special preparation needed — we'll get you set up on Monday. Looking forward to meeting you!"
+  },
+  {
+    "id": "easy_009",
+    "subject": "Quarterly report is ready",
+    "body": "Hi,\n\nThe Q4 financial report has been finalized and uploaded to the shared drive. Please review at your convenience.\n\nFinance Team",
+    "sender": "finance@company.com",
+    "gold_intents": ["information_sharing"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Thanks for the update. I'll review the Q4 report this week."
+  },
+  {
+    "id": "easy_010",
+    "subject": "Unsubscribe confirmation",
+    "body": "You have been successfully unsubscribed from our marketing emails. You will no longer receive promotional content from us.",
+    "sender": "noreply@marketing-co.com",
+    "gold_intents": ["newsletter"],
+    "gold_priority": "low",
+    "gold_action": "ignore",
+    "gold_response": ""
+  },
+  {
+    "id": "easy_011",
+    "subject": "Lunch order for today",
+    "body": "Hey everyone,\n\nI'm placing a group lunch order from Thai Palace. Send me your orders by 11:30 AM. Menu is in the shared channel.\n\nCheers,\nAlex",
+    "sender": "alex.kim@company.com",
+    "gold_intents": ["social"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Thanks Alex! I'll have the Pad Thai with chicken please."
+  },
+  {
+    "id": "easy_012",
+    "subject": "Password reset request",
+    "body": "We received a request to reset the password for your account. If you did not make this request, please ignore this email. Otherwise, click the link below to reset your password.",
+    "sender": "security@company.com",
+    "gold_intents": ["information_sharing"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "I did not request a password reset. This may be a security concern — please investigate."
+  },
+  {
+    "id": "easy_013",
+    "subject": "Approved: Your PTO request",
+    "body": "Your paid time off request for March 20-24 has been approved. Enjoy your time off!\n\n— HR System",
+    "sender": "hr-system@company.com",
+    "gold_intents": ["information_sharing"],
+    "gold_priority": "low",
+    "gold_action": "ignore",
+    "gold_response": ""
+  },
+  {
+    "id": "easy_014",
+    "subject": "Client feedback on the demo",
+    "body": "Hi,\n\nThe client loved the demo yesterday! They want to proceed to the contract stage. Great work from the whole team.\n\nBest,\nDavid (Sales)",
+    "sender": "david.sales@company.com",
+    "gold_intents": ["information_sharing"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "That's great news David! Thanks for letting us know. Happy to support the contract discussions."
+  },
+  {
+    "id": "easy_015",
+    "subject": "FREE VIAGRA — Limited Time Offer!!!",
+    "body": "Buy now and get 90% off! No prescription needed! Click here for amazing deals! This offer won't last!",
+    "sender": "deals4u@pharma-spam.net",
+    "gold_intents": ["spam"],
+    "gold_priority": "low",
+    "gold_action": "ignore",
+    "gold_response": ""
+  }
+]

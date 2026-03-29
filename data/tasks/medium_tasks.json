@@ -1,0 +1,152 @@
+[
+  {
+    "id": "med_001",
+    "subject": "Re: Project timeline and lunch",
+    "body": "Hey,\n\nCan we push the deadline for the API integration to next Friday? Also, are you free for lunch tomorrow? I want to discuss the onboarding flow changes.\n\nThanks,\nPriya",
+    "sender": "priya.sharma@company.com",
+    "gold_intents": ["scheduling", "social", "question"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Hi Priya, I think pushing to Friday is doable — let me check with the team and confirm by EOD. Lunch tomorrow works! Let's meet at noon in the cafeteria."
+  },
+  {
+    "id": "med_002",
+    "subject": "Need your sign-off + Q3 numbers",
+    "body": "Hi,\n\nI need your approval on the revised budget by Thursday. Also, could you pull the Q3 revenue numbers? Marketing is asking for them for the board deck.\n\nBest,\nRachel",
+    "sender": "rachel.finance@company.com",
+    "gold_intents": ["approval_request", "task_assignment"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Hi Rachel, I'll review the revised budget and have my sign-off to you by Wednesday. I'll also pull the Q3 revenue numbers and share them with marketing today."
+  },
+  {
+    "id": "med_003",
+    "subject": "Fwd: Customer complaint — needs attention",
+    "body": "FYI — forwarding this customer complaint. They're upset about the delayed shipment. Can someone from support look into this? Not sure if it's our issue or the vendor's.\n\n--- Forwarded ---\nSubject: WHERE IS MY ORDER??\nI ordered 2 weeks ago and still nothing. This is unacceptable. I want a refund or the product by Friday.",
+    "sender": "ops.manager@company.com",
+    "gold_intents": ["complaint", "task_assignment"],
+    "gold_priority": "high",
+    "gold_action": "escalate",
+    "gold_response": "I'll escalate this to the support team immediately and follow up with the vendor on shipment status. Will update you by end of day."
+  },
+  {
+    "id": "med_004",
+    "subject": "Quick question about the config",
+    "body": "hey, quick q — do we use the staging or prod config for the load test? also, noticed the CI pipeline is failing on the linting step, might want to check that out.\n\nthanks",
+    "sender": "tony.dev@company.com",
+    "gold_intents": ["question", "information_sharing"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Use the staging config for load tests — never run those against prod. Good catch on the CI linting failure, I'll take a look at it now."
+  },
+  {
+    "id": "med_005",
+    "subject": "Partnership opportunity — follow up",
+    "body": "Hi,\n\nFollowing up on our conversation at the conference last week. We'd love to explore a partnership with your team. Could we schedule a 30-minute call this week to discuss further?\n\nAlso, I noticed your product page mentions an API — is there documentation available?\n\nRegards,\nMark Stevens\nBD Lead, TechPartners Inc.",
+    "sender": "mark.stevens@techpartners.io",
+    "gold_intents": ["follow_up", "scheduling", "question"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Hi Mark, great to hear from you! I'd be happy to schedule a call this week — how about Thursday at 2 PM? Our API docs are at docs.example.com/api. Looking forward to exploring this further."
+  },
+  {
+    "id": "med_006",
+    "subject": "Can you cover my shift?",
+    "body": "Hey, I have a dentist appointment Thursday afternoon. Can you cover the on-call rotation for me? I'll cover your Friday shift in return.\n\nAlso, did you see the new incident response runbook? Let me know what you think.",
+    "sender": "jordan.ops@company.com",
+    "gold_intents": ["question", "feedback_request"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Sure Jordan, I can cover your Thursday on-call shift. Swapping for Friday works for me. I'll take a look at the new runbook and share my thoughts tomorrow."
+  },
+  {
+    "id": "med_007",
+    "subject": "Re: Hiring decision",
+    "body": "The interview panel's scores are in. Candidate A scored highest but wants 20% above budget. Candidate B is within budget but less experienced. What's your recommendation? We need to decide by tomorrow.\n\nAlso, please update the job posting — we got feedback that the requirements list is too long.",
+    "sender": "hr.director@company.com",
+    "gold_intents": ["question", "task_assignment", "urgent_request"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "I'd recommend going with Candidate A and negotiating on the salary — the experience gap with Candidate B could cost us more in ramp-up time. I'll trim the job posting requirements today."
+  },
+  {
+    "id": "med_008",
+    "subject": "Security advisory — action may be required",
+    "body": "A vulnerability (CVE-2026-1234) has been identified in the logging library we use (v2.3.x). Severity: Medium. Patches are available in v2.3.5.\n\nPlease assess if your services are affected and plan an upgrade within the next sprint.\n\nSecurity Team",
+    "sender": "security@company.com",
+    "gold_intents": ["information_sharing", "task_assignment"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Thanks for the advisory. I've checked — two of our services use the affected version. I'll add the upgrade to our current sprint and have it deployed by end of next week."
+  },
+  {
+    "id": "med_009",
+    "subject": "Re: Training budget question",
+    "body": "Hi,\n\nI want to attend the MLOps Conference in May ($1,200 registration + travel). Is there still budget available? Also, I found an online course on advanced Kubernetes that might be useful for the whole team — should I share the link?\n\nThanks,\nAmanda",
+    "sender": "amanda.ml@company.com",
+    "gold_intents": ["question", "approval_request"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Hi Amanda, we do have some training budget remaining — I'll check the exact amount and get back to you by tomorrow. Yes, please share the Kubernetes course link! If it's good, we can include it in the team's learning plan."
+  },
+  {
+    "id": "med_010",
+    "subject": "Urgent: Client demo prep",
+    "body": "The demo for Acme Corp got moved to Wednesday morning. We need to finalize the slide deck and make sure the staging environment is stable. Can you own the environment check?\n\nAlso — reminder that the monthly metrics report is due Friday. Don't forget.",
+    "sender": "pm.lead@company.com",
+    "gold_intents": ["urgent_request", "task_assignment", "follow_up"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "I'll take ownership of the staging environment check and have it validated by Tuesday EOD. I'm also aware of the Friday metrics report deadline — already working on it."
+  },
+  {
+    "id": "med_011",
+    "subject": "Thoughts on the new design?",
+    "body": "Hey, I attached the updated mockups for the settings page. Personally I'm not sure about the color scheme — the dark theme feels heavy. What do you think?\n\nOh and can you add me to the repo for the design system? I don't have access yet.",
+    "sender": "ui.designer@company.com",
+    "gold_intents": ["feedback_request", "task_assignment"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "I agree the dark theme feels a bit heavy — maybe we could try a slate-blue accent instead of pure dark? I'll add you to the design system repo now."
+  },
+  {
+    "id": "med_012",
+    "subject": "Re: Vendor contract renewal",
+    "body": "The vendor wants a 15% price increase on renewal. Our contract expires in 3 weeks. I think we should negotiate or explore alternatives. Do you have bandwidth to lead the evaluation?\n\nAlso, the legal team needs the current SLA document — could you forward it to them?",
+    "sender": "procurement@company.com",
+    "gold_intents": ["question", "task_assignment"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "15% is steep — I can lead the vendor evaluation this week. I'll pull together 2-3 alternatives for comparison. I'll forward the SLA document to legal today."
+  },
+  {
+    "id": "med_013",
+    "subject": "Newsletter: This week in AI",
+    "body": "Top stories this week:\n1. New open-source LLM beats GPT-4 on coding benchmarks\n2. EU passes comprehensive AI regulation framework\n3. Google announces Gemini 3.0\n\nThought you'd find this interesting given our AI roadmap discussions.\n\n— AI Digest Team",
+    "sender": "digest@ai-newsletter.com",
+    "gold_intents": ["newsletter", "information_sharing"],
+    "gold_priority": "low",
+    "gold_action": "forward",
+    "gold_response": "Forwarding this to the AI team — the open-source LLM benchmarks and EU regulation updates are relevant to our roadmap."
+  },
+  {
+    "id": "med_014",
+    "subject": "Incident follow-up: database outage",
+    "body": "Hi team,\n\nPost-mortem for yesterday's database outage is scheduled for Thursday at 3 PM. Please prepare your timeline of events. We also need someone to write the customer communication about the incident — any volunteers?\n\n— SRE Lead",
+    "sender": "sre.lead@company.com",
+    "gold_intents": ["meeting_request", "task_assignment"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "I'll be at the post-mortem with my timeline ready. I can volunteer to draft the customer communication — I'll have a first draft by Wednesday evening for review."
+  },
+  {
+    "id": "med_015",
+    "subject": "Re: Can you check this?",
+    "body": "Hey,\n\nThe integration tests are passing locally but failing in CI. I suspect it's a timezone issue. Can you check? Also, I noticed the pre-commit hooks aren't set up in the new repo — can you add them when you get a chance?\n\nThanks",
+    "sender": "backend.dev@company.com",
+    "gold_intents": ["question", "task_assignment"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "I'll investigate the CI timezone issue — probably need to set TZ in the CI environment. I'll also add the pre-commit hooks to the new repo this afternoon."
+  }
+]

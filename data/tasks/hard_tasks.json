@@ -1,0 +1,152 @@
+[
+  {
+    "id": "hard_001",
+    "subject": "re: stuff + also pls check",
+    "body": "hey so i need u to review the pr i opened for the auth module also can u approve my expense report its been sitting for 2 weeks and oh btw sarah wants to know if we're still doing the team dinner friday night lmk asap thx",
+    "sender": "coworker.rushed@company.com",
+    "gold_intents": ["feedback_request", "approval_request", "social", "question"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "I'll review the auth PR today. I'll approve your expense report this afternoon — sorry for the delay. And yes, the team dinner Friday is still happening! I'll confirm the restaurant with Sarah."
+  },
+  {
+    "id": "hard_002",
+    "subject": "URGENT help needed with deployment AND the thing from last week",
+    "body": "OK so the prod deployment is stuck and I can't figure out why the rollback isn't working. Also remember that data migration we talked about last tuesday? The client is now asking for it by tomorrow instead of next week. plus i think theres a bug in the notification service but im not sure. can u triage all of this?",
+    "sender": "panicked.dev@company.com",
+    "gold_intents": ["urgent_request", "task_assignment", "follow_up", "question"],
+    "gold_priority": "critical",
+    "gold_action": "escalate",
+    "gold_response": "I'm escalating the prod deployment issue to the SRE team immediately. For the data migration acceleration — I'll assess feasibility within the hour and loop in the PM. I'll also investigate the notification service bug. Let me triage by priority and get back to you in 30 minutes."
+  },
+  {
+    "id": "hard_003",
+    "subject": "Fwd: fwd: FWD: Important or not?",
+    "body": "hey forwarding this chain - not sure if this is real or spam. the original sender claims to be from our enterprise client Globex but the email looks sketchy. they're asking for API credentials to 'verify integration'. also unrelated but i need next week's on-call schedule, who do i ask?\n\n---forwarded---\nDear Partner,\nWe urgently need your API key and secret to verify our integration is working. Please reply with credentials at your earliest convenience.\nRegards, IT Dept Globex Corp\nSent from: support-verify@gl0bex-corp.net",
+    "sender": "confused.employee@company.com",
+    "gold_intents": ["spam", "question", "information_sharing"],
+    "gold_priority": "critical",
+    "gold_action": "escalate",
+    "gold_response": "This is almost certainly a phishing attempt — the sender domain 'gl0bex-corp.net' uses a zero instead of 'o' and legitimate partners never ask for API credentials via email. I'm escalating this to the security team immediately. DO NOT reply to the forwarded email. For the on-call schedule, check with Jordan in ops or look at the PagerDuty dashboard."
+  },
+  {
+    "id": "hard_004",
+    "subject": "can you maybe possibly look at this when you get a sec",
+    "body": "hi sorry to bother you but if you have time no rush at all but the customer dashboard has been showing wrong numbers since last week and some clients have noticed and are starting to complain and also the ceo mentioned it in the all-hands so maybe its actually kinda urgent? also i think the analytics pipeline might be the root cause but pls dont tell the data team i said that lol\n\nalso happy belated birthday!! 🎂",
+    "sender": "passive.reporter@company.com",
+    "gold_intents": ["urgent_request", "complaint", "information_sharing", "social"],
+    "gold_priority": "critical",
+    "gold_action": "escalate",
+    "gold_response": "This is definitely urgent — wrong numbers on the customer dashboard that clients and the CEO have noticed. I'm escalating this now. I'll investigate the analytics pipeline as a potential root cause and coordinate with the data team professionally. Thanks for flagging it, and thanks for the birthday wishes!"
+  },
+  {
+    "id": "hard_005",
+    "subject": "Re: Re: Re: various things",
+    "body": "Per our last 3 emails which you haven't responded to:\n\n1. The contract with Initech needs your signature by COB today\n2. I rescheduled your 1:1 with the VP to Thursday 4pm — hope that works\n3. The intern is asking about the mentorship program doc you promised\n4. IT says your laptop refresh is ready for pickup\n\nPLS respond to at least #1, it's blocking the deal.",
+    "sender": "exec.assistant@company.com",
+    "gold_intents": ["urgent_request", "scheduling", "follow_up", "task_assignment"],
+    "gold_priority": "critical",
+    "gold_action": "reply",
+    "gold_response": "Sorry for the delayed responses. 1) I'll sign the Initech contract within the hour. 2) Thursday 4pm works for the VP 1:1. 3) I'll send the mentorship doc to the intern by EOD tomorrow. 4) I'll pick up the laptop Thursday morning. Thanks for keeping track of everything."
+  },
+  {
+    "id": "hard_006",
+    "subject": "feedback on proposal + some concerns",
+    "body": "I reviewed the technical proposal you sent. Overall its good but I have concerns about the timeline — 6 weeks seems aggressive for the ML pipeline rewrite. Also the cost estimate doesn't include infrastructure costs which could be significant.\n\nSeparately, I heard through the grapevine that the project might get deprioritized next quarter. Should we even be investing this much effort? Maybe we should have a frank discussion with leadership before committing resources.\n\nFinally can you send me the benchmark results from last sprint? I need them for my presentation to the board.",
+    "sender": "senior.director@company.com",
+    "gold_intents": ["feedback_request", "question", "task_assignment", "information_sharing"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Thank you for the thorough feedback. You raise valid points — I'll revise the timeline to 8-9 weeks and add an infrastructure cost section. Regarding the potential deprioritization, I agree we should align with leadership before committing. I'll set up a meeting with the VP this week for a candid discussion. I'll send you the sprint benchmark results by end of day."
+  },
+  {
+    "id": "hard_007",
+    "subject": "idk what to do with this client",
+    "body": "so globex wants to expand their contract but theyre also threatening to leave if we dont fix the latency issues by next month. their technical lead is great to work with but their procurement team is impossible. they also want a discount for the expanded scope which honestly feels reasonable but it wasnt in my authority to agree to.\n\nshould i escalate the pricing discussion to you? and who handles the latency issue — engineering or devops? also the account manager for globex is on vacation until next week so im kinda on my own here\n\noh and they asked if we have SOC2 compliance docs they can share with their security team",
+    "sender": "account.rep@company.com",
+    "gold_intents": ["question", "urgent_request", "task_assignment", "follow_up"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Good summary of the situation. Here's how we'll handle this: 1) Yes, escalate the pricing discussion to me — I can approve a reasonable discount for the expanded scope. 2) The latency issues should go to engineering first; loop in the devops team if it's infrastructure-related. 3) I'll be the escalation point while the account manager is out. 4) I'll send you our SOC2 compliance documentation today. Let's sync for 15 minutes tomorrow morning to align on the approach."
+  },
+  {
+    "id": "hard_008",
+    "subject": "CRTICAL: systm down plz hlp!!!",
+    "body": "teh production srvr is down since 20 mins ago nothin is wrking custmers r complaining on twitter i tried restarting but it made it wrse the logs show somthing about out of memmory but also disk full??? devops is not responding on slack WHAT DO I DO\n\nalso unrelatd but can u approve my vacation req for april i submited it last week thx",
+    "sender": "junior.panicking@company.com",
+    "gold_intents": ["urgent_request", "question", "approval_request"],
+    "gold_priority": "critical",
+    "gold_action": "escalate",
+    "gold_response": "I'm escalating this to the incident commander immediately. In the meantime: 1) DON'T restart anything else. 2) Run 'df -h' and 'free -m' to confirm disk and memory status. 3) Check if there are any large log files that can be safely rotated. I'm paging the on-call DevOps engineer now. Regarding your vacation request — I'll handle that later today once we've resolved this incident."
+  },
+  {
+    "id": "hard_009",
+    "subject": "Re: confidential — reorg plans",
+    "body": "Following up on the leadership meeting. The reorg will merge our team with platform engineering. HR wants managers to identify which roles overlap and which are unique by next Wednesday. This is confidential — do not share beyond direct reports.\n\nAlso — two of my reports have separately asked about promotion timelines. With the reorg coming, I'm not sure what to tell them. Can we discuss strategy?\n\nUnrelated: the annual hackathon committee needs another judge. Would you be interested?",
+    "sender": "peer.manager@company.com",
+    "gold_intents": ["task_assignment", "question", "information_sharing", "follow_up"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Thanks for the heads up on the reorg. I'll prepare the role overlap analysis by Tuesday to give us buffer before the Wednesday deadline. For the promotion conversations — let's discuss offline, perhaps over coffee tomorrow. It's tricky to navigate with the reorg pending. And yes, I'd be happy to judge the hackathon!"
+  },
+  {
+    "id": "hard_010",
+    "subject": "meeting notes + action items + also my idea",
+    "body": "Hey here are the notes from today's architecture review:\n- We agreed to migrate from Redis to DragonflyDB\n- Need to update the caching layer abstraction first\n- Performance benchmarks required before proceeding\n- Timeline: 2 sprints\n\nAction items:\n- You: write the migration plan\n- Me: set up DragonflyDB staging instance\n- Both: review caching abstraction by Friday\n\nAlso I had this idea at 2am — what if we add a circuit breaker pattern to all our external API calls? I know it's scope creep but I think it would save us during outages. Thoughts? Should I write an RFC?\n\nOh and did you file the budget request for the new load testing tool? Finance said they never received it.",
+    "sender": "tech.lead@company.com",
+    "gold_intents": ["information_sharing", "task_assignment", "feedback_request", "follow_up", "question"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Thanks for the clean notes. I'll have the migration plan drafted by Thursday. I agree on reviewing the caching abstraction by Friday — let's pair on it if needed. The circuit breaker idea is solid — yes, write an RFC and we can evaluate it for next quarter to avoid scope creep now. Regarding the budget request — I'll resubmit to finance today, must have gotten lost."
+  },
+  {
+    "id": "hard_011",
+    "subject": "Customer success + engineering alignment",
+    "body": "We have a disconnect between what CS is promising clients and what engineering can deliver. Three examples from this week:\n1. CS told Acme we'd have SSO by March (engineering says June)\n2. CS committed to 99.99% SLA (we're at 99.9%)\n3. CS offered custom reporting (not on our roadmap)\n\nThis needs to stop. Can you help me set up a process where CS validates promises with engineering before committing? I'm thinking a shared Slack channel or a weekly sync.\n\nAlso — the CS team is asking for better internal documentation of feature timelines. Any recommendations on tools?",
+    "sender": "vp.engineering@company.com",
+    "gold_intents": ["complaint", "task_assignment", "question"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "This is a real problem — I've seen the impact on engineering morale too. I propose: 1) A shared #cs-eng-alignment Slack channel for real-time checks. 2) A weekly 30-min sync between CS leads and engineering PM. 3) A shared Notion doc with feature timelines that CS can reference. I'll draft the process doc and set up the Slack channel this week. For tooling, Linear or Notion work well for timeline visibility."
+  },
+  {
+    "id": "hard_012",
+    "subject": "helppp",
+    "body": "ok so i accidentally pushed a commit to main that has a hardcoded api key in it. i already reverted it but its in the git history. also i think the key might have been scraped because we got an alert about unusual API usage.\n\nwhat do i do?? should i rotate the key? whos going to yell at me? do i need to file an incident report?\n\nsorry this happened during the sprint demo so everyone probably saw it on the screen share too 😰",
+    "sender": "mortified.dev@company.com",
+    "gold_intents": ["urgent_request", "question", "information_sharing"],
+    "gold_priority": "critical",
+    "gold_action": "escalate",
+    "gold_response": "First — stay calm, this happens and we'll fix it. Immediate actions: 1) YES, rotate the API key right now, don't wait. 2) I'm escalating to the security team for the API usage alert. 3) We'll need to scrub the key from git history using BFG or git filter-branch. 4) Yes, file a brief incident report — be factual, no blame needed. Nobody is going to yell at you; we'll use this as a learning moment to set up pre-commit secret scanning. I'll be on a call with you in 5 minutes."
+  },
+  {
+    "id": "hard_013",
+    "subject": "Mixed signals from product",
+    "body": "Product gave us three priorities for this quarter:\n1. Improve onboarding conversion (product says critical)\n2. Enterprise feature parity (sales says critical)\n3. Technical debt reduction (engineering says critical)\n\nWe obviously can't do all three at full capacity. I tried to get them to rank-order but they just said everything is P0. The VP of Product and VP of Sales aren't aligned either.\n\nHow do we break the tie? Should I escalate to the CTO? Also we have 2 open engineering positions that would help — any update on those hiring reqs?",
+    "sender": "engineering.manager@company.com",
+    "gold_intents": ["question", "urgent_request", "follow_up"],
+    "gold_priority": "high",
+    "gold_action": "reply",
+    "gold_response": "Classic priority paralysis. Here's my suggestion: 1) Let's build a simple impact/effort matrix for all three and present it to the VPs with a recommended split (e.g., 50/30/20). Data beats opinions. 2) I wouldn't escalate to the CTO yet — let's try one more alignment meeting with both VPs and come with a recommendation. 3) The hiring reqs are approved — recruiting has two candidates in the pipeline. I'll get you an update by Friday."
+  },
+  {
+    "id": "hard_014",
+    "subject": "re: the thing",
+    "body": "did you see what happened in the standup today? i think there's tension between the frontend and backend teams about the API contract changes. neither side wants to own the schema migration.\n\nalso the new intern broke the staging environment again lol. third time this month. we should probably limit their permissions but i dont want to be mean about it.\n\nanyway can we chat about promotions? i have someone on my team who's really ready but i know the budget is tight. and when is the next performance review cycle?\n\np.s. — are we still doing the team offsite in april? i need to book flights",
+    "sender": "fellow.manager@company.com",
+    "gold_intents": ["information_sharing", "question", "task_assignment", "social", "follow_up"],
+    "gold_priority": "medium",
+    "gold_action": "reply",
+    "gold_response": "Lot to unpack here: 1) The API contract tension — let's set up a joint session where both teams define the contract together. I'll facilitate. 2) Limiting the intern's staging permissions isn't mean, it's responsible. I'll set up a proper dev sandbox with guardrails. 3) Let's schedule 30 min to discuss the promotion case — bring the evidence and I'll help you make the strongest case. Next review cycle starts May 1. 4) Yes, April offsite is confirmed — book your flights!"
+  },
+  {
+    "id": "hard_015",
+    "subject": "Compliance audit findings + remediation",
+    "body": "The external auditors flagged three issues:\n1. Insufficient access logging on the admin panel (Critical)\n2. Missing data retention policy documentation (High)\n3. Two developer accounts still active after offboarding (Critical)\n\nWe have 30 days to remediate or risk losing our ISO 27001 certification. Items 1 and 3 need engineering work. Item 2 needs policy documentation from legal + engineering input.\n\nI need you to estimate LOE for items 1 and 3 and assign engineers by end of this week. Also, who from engineering should join the remediation kickoff meeting next Monday?\n\nThe auditors also asked if we have automated compliance checks—something to consider for the future.\n\nPardon the length. This is a stressful one.",
+    "sender": "compliance.officer@company.com",
+    "gold_intents": ["urgent_request", "task_assignment", "question", "information_sharing"],
+    "gold_priority": "critical",
+    "gold_action": "reply",
+    "gold_response": "Taking this very seriously. Here's my plan: 1) Access logging (Item 1): ~3-4 days LOE, I'll assign our senior backend engineer. 2) Offboarded accounts (Item 3): Should be same-day fix, I'll handle it personally today to eliminate the risk immediately. 3) I'll provide the engineering input needed for the data retention policy by mid-next week. 4) I'll attend the Monday remediation kickoff along with our security champion. 5) For automated compliance checks, I'll add it to our Q2 roadmap discussion. I'll have the full LOE estimates and assignments to you by Thursday."
+  }
+]

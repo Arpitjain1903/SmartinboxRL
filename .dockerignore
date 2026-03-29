@@ -1,0 +1,22 @@
+# Disregard build and environment directories
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Git
+.git/
+.gitignore
+
+# Data & Output (Optional based on your needs, but good for reducing size)
+results/
+
+# Editor and agent files
+.vscode/
+.idea/
+.gemini/
+.gsd/
+.agent/
+.streamlit/

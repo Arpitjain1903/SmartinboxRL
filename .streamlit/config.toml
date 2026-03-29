@@ -1,0 +1,4 @@
+[server]
+# Disable file watcher to suppress torchvision warnings from transformers vision models
+# (SmartInboxRL only uses text embeddings, not vision models)
+fileWatcherType = "none"

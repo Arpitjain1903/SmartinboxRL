@@ -1,0 +1,17 @@
+# Core
+gymnasium>=0.29.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Semantic scoring
+sentence-transformers>=2.7.0
+
+# Dashboard
+streamlit>=1.35.0
+plotly>=5.22.0
+
+# LLM agent
+openai>=1.30.0
+
+# Config
+python-dotenv>=1.0.0
