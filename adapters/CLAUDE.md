@@ -1,77 +1,66 @@
-# Claude Adapter
+# Claude Adapter for SmartInboxRL
 
-> **Everything in this file is optional.**
-> For canonical rules, see [PROJECT_RULES.md](../PROJECT_RULES.md).
-
-This adapter provides optional enhancements for Claude models in Antigravity.
+This adapter provides specific guidance for using Claude (e.g., Claude 3.5 Sonnet) as the underlying model for the `LLMAgent` in SmartInboxRL. It helps adapt Claude's natural conversational style into the rigid JSON structure expected by the benchmark.
 
 ---
 
-## Extended Thinking Mode
+## System Prompt Customization
 
-When available, activate extended thinking for:
+Claude tends to add conversational filler ("Here is the JSON you requested:") even when explicitly told not to. 
 
-| Task Type | Recommended |
-|-----------|-------------|
-| Architecture planning | ✅ High effort |
-| Complex debugging | ✅ High effort |
-| Security analysis | ✅ High effort |
-| Simple edits | ❌ Not needed |
-| Quick iterations | ❌ Overhead too high |
+**Recommended Prompt Adjustments:**
+When configuring `LLMAgent(model="claude-3-5-sonnet-20240620")`, override the system prompt to enforce strict output formatting using XML constraint cues.
 
-### Effort Levels
+```markdown
+You are an intelligent email assistant. Analyze the email and respond with a JSON object.
 
-If the model supports effort/budget levels:
+<formatting_rules>
+- You MUST return ONLY valid, parseable JSON.
+- DO NOT wrap the json in markdown blocks (```json ... ```).
+- DO NOT output any text before the opening `{` or after the closing `}`.
+- DO NOT include conversational filler like "Here is the response".
+</formatting_rules>
 
-| Level | Use Case |
-|-------|----------|
-| `low` | Simple edits, formatting, comments |
-| `medium` | Standard implementation (default) |
-| `high` | Complex logic, refactoring, debugging |
-| `max` | Architecture, security, critical decisions |
-
-**Default:** `medium` if not specified.
-
----
-
-## Artifacts Mode
-
-When artifacts are supported:
-
-- Use for code generation that needs preview
-- Use for documentation with formatting
-- Avoid for small inline edits
-
----
-
-## Context Optimization
-
-Claude-specific context tips:
-
-1. **System prompt loading**: Core rules in system prompt, task details in user message
-2. **XML structure**: Claude parses XML well — use task XML format from GSD-STYLE.md
-3. **Conversation history**: Minimal history preferred; use STATE.md for continuity
-
----
-
-## File Conventions
-
-Not required, but if organizing Claude-specific files:
-
-```
-.claude/
-├── CLAUDE.md      # This adapter (if using)
-└── settings.json  # IDE-specific settings
+Required JSON keys:
+1. "intents": list of valid strings
+2. "priority": "low" | "medium" | "high" | "critical"
+3. "action": "reply" | "ignore" | "escalate" | "forward"
+4. "response": string
 ```
 
 ---
 
-## Anti-Patterns
+## Token Budgets & Latency
 
-❌ **Using max effort for everything** — Slow and expensive
-❌ **Skipping verification** — Thinking mode doesn't guarantee correctness
-❌ **Depending on artifacts** — Not all Claude interfaces support them
+Claude 3.5 Sonnet is highly capable but token volume impacts latency (critical when evaluating 100+ episodes).
+
+- **Input Context:** Moderate (~300-500 tokens per email). The `history_window=3` setting is optimal. Do not increase it past 5, or context cache misses will degrade speed.
+- **Max Output Tokens:** Set `max_tokens=256`. The agent only needs to generate a short JSON string. Setting this low prevents runway generation if the model hallucinates formatting.
+- **Temperature:** Set `temperature=0.0`. You want deterministic extraction and categorization, not creative variance, to ensure stable benchmark scores.
 
 ---
 
-*See PROJECT_RULES.md for canonical requirements.*
+## Parsing Guidance
+
+Because Claude occasionally uses markdown fences despite instructions, ensure `_parse_response` in `llm_agent.py` robustly strips them.
+
+If using the Anthropic API directly (instead of an OpenAI-compatible proxy), use Claude's **Tool Use (Function Calling)** feature instead of raw JSON generation. 
+
+Define the tool schema:
+```json
+{
+  "name": "take_inbox_action",
+  "description": "Output the final decision for the current email.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "intents": { "type": "array", "items": { "type": "string" } },
+      "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+      "action": { "type": "string", "enum": ["reply", "ignore", "escalate", "forward"] },
+      "response": { "type": "string" }
+    },
+    "required": ["intents", "priority", "action", "response"]
+  }
+}
+```
+Force the model to use `tool_choice: {"type": "tool", "name": "take_inbox_action"}`. This guarantees perfect JSON extraction without regex parsing fallbacks.

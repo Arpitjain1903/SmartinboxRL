@@ -1,396 +1,117 @@
-<div align="center">
+# SmartInboxRL — OpenEnv Email Triage Environment
 
-# 🧠 SmartInboxRL
+SmartInboxRL is a Gymnasium-compatible reinforcement learning environment designed to evaluate AI agents on realistic email triage tasks. Triage is a critical first step in productivity workflows, requiring high precision in intent extraction, priority classification, and drafting appropriate responses under noisy real-world conditions.
 
-### *Teaching AI to Think Like a Real Inbox Assistant*
+## 1. Overview & Motivation
+As LLM-based agents become more prevalent in enterprise environments, the need for robust evaluation of their triage capabilities grows. Simple RAG-based systems often struggle with:
+- **Noisy Inputs**: Emails often contain typos, shorthand, and irrelevant signatures.
+- **Multi-Intent Detection**: A single email might contain a request for a meeting, a technical question, and a complaint.
+- **Dynamic Context**: Decisions must be made based on previous interaction history within a conversation thread.
+- **Structured Output Compliance**: Agents must produce machine-readable actions for downstream automation.
 
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Gymnasium](https://img.shields.io/badge/Gymnasium-0.29+-FF6F00?style=for-the-badge&logo=openai&logoColor=white)](https://gymnasium.farama.org/)
-[![Streamlit](https://img.shields.io/badge/Dashboard-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![HuggingFace](https://img.shields.io/badge/🤗_Deploy-Spaces-FFD21E?style=for-the-badge)](https://huggingface.co/spaces)
-[![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
+SmartInboxRL addresses these challenges by providing a controlled yet realistic environment for benchmarking RL and LLM agents.
 
-**A realistic RL evaluation benchmark for AI agents navigating real-world email workflows.**
+## 2. Environment Description
+The environment is structured as a series of episodes where each step presents a new email from a dataset (e.g., Enron or Synthetic) with varying difficulty levels:
+- **Easy**: Single-intent, clean text, obvious priority.
+- **Medium**: Multiple intents, some noise, ambiguous priority requiring judgment.
+- **Hard**: Adversarial noise, conflicting intents, and complex history dependencies.
 
-[Overview](#-overview) · [Architecture](#-architecture) · [Quick Start](#-quick-start) · [Reward System](#-reward-system) · [Agents](#-baseline-agents) · [Dashboard](#-interactive-dashboard) · [Deploy](#️-deployment)
+## 3. Observation Space
+The observation is a structured object (Pydantic `EmailObservation`) containing:
 
-</div>
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `email` | `str` | The body text of the current email being triaged. |
+| `history` | `List[dict]` | Context from the last N interactions in the same thread. |
+| `step` | `int` | Current sequence number in the episode. |
+| `difficulty` | `str` | Tier of the current task ("easy", "medium", "hard"). |
 
----
+## 4. Action Space
+Agents must produce a structured action (Pydantic `EmailAction`) with the following fields:
 
-## 🎯 Overview
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `intents` | `List[str]` | Extracted intents (e.g., `meeting_request`, `complaint`). |
+| `priority` | `str` | Cleanup level: `low`, `medium`, `high`, `critical`. |
+| `action` | `str` | Triage decision: `reply`, `ignore`, `escalate`, `forward`. |
+| `response` | `str` | Drafted reply text (if applicable). |
 
-Most AI benchmarks ask:
-> *"Can the model answer correctly?"*
+## 5. Reward Function
+The environment provides a dense composite reward in the range `[0.0, 1.0]` per step:
 
-**SmartInboxRL asks:**
-> *"Can the model behave intelligently in the real world?"*
+| Component | Weight | Description | Measurement |
+| :--- | :--- | :--- | :--- |
+| **Intent Score** | 30% | How well the agent identified the primary intents. | F1-Score against ground truth labels. |
+| **Priority Score** | 20% | Correctness of the classification. | Exact match or partial credit for near-neighbor. |
+| **Action Score** | 20% | Appropriateness of the triage decision. | Comparison with expert gold labels. |
+| **Response Quality** | 30% | Semantic accuracy of the draft. | Cosine similarity using `all-MiniLM-L6-v2`. |
 
-SmartInboxRL is a **Gymnasium-compatible reinforcement learning environment** that evaluates AI agents on realistic inbox management tasks. Agents must:
+## 6. Task Descriptions
+- **simple_reply (Easy)**: A meeting request that needs a simple "Yes/No" or "I'm available" response.
+- **multi_intent_triage (Medium)**: An email containing both a billing question and a feature request, requiring high priority and a detailed response.
+- **adversarial_noise (Hard)**: Emails with heavy typos, conversational shorthand, and conflicting instructions designed to test agent robustness.
 
-1. **Understand** messy, multi-intent emails with noise and ambiguity
-2. **Decide** on the correct action (reply / ignore / escalate / forward)
-3. **Prioritize** correctly (low / medium / high / critical)
-4. **Communicate** with a useful, context-aware response
-
-This mirrors the complete workflow a professional email assistant must execute — not a toy task.
-
----
-
-## 🧩 What Makes This Different
-
-| Feature | SmartInboxRL | Typical Benchmarks |
-|---|---|---|
-| Task type | Multi-step decision pipeline | Static Q&A |
-| Email realism | Noise injection + Enron-style | Clean synthetic |
-| Scoring | Embedding-based semantic | String matching |
-| Reward signal | Dense, multi-component | Binary correct/wrong |
-| Anti-cheating | Penalties for hacking | None |
-| Memory | Interaction history context | Single-turn |
-| Score separation | Deliberate variance by difficulty | Ceiling/floor issues |
-
----
-
-## 🏗️ Architecture
-
-```
-SmartInboxRL/
-│
-├── environment/
-│   ├── inbox_env.py          # Core Gymnasium environment (InboxEnv)
-│   ├── email_loader.py       # Loads & preprocesses email tasks
-│   ├── state.py              # Episode state tracker (history, actions)
-│   └── action_space.py       # Discrete action definitions
-│
-├── rewards/
-│   ├── reward_engine.py      # Composite reward (intent + priority + action + response)
-│   ├── penalty_system.py     # Anti-cheating penalties
-│   └── embedding_scorer.py   # Semantic response scoring via sentence-transformers
-│
-├── agents/
-│   ├── llm_agent.py          # LLM baseline (OpenAI-compatible API)
-│   ├── rule_agent.py         # Keyword heuristic baseline
-│   └── random_agent.py       # Uniform random baseline
-│
-├── data/
-│   ├── tasks/
-│   │   ├── easy_tasks.json   # Clear, unambiguous emails
-│   │   ├── medium_tasks.json # Moderate ambiguity
-│   │   └── hard_tasks.json   # Multi-intent + noise + conflicting signals
-│   └── noise_profiles.json   # Typo/shorthand injection templates
-│
-├── app.py                    # Streamlit interactive dashboard
-├── inference.py              # CLI for running evaluation episodes
-├── evaluate.py               # Batch evaluation + metrics export
-├── Dockerfile                # HuggingFace Spaces-compatible container
-├── docker-compose.yml        # Local development orchestration
-└── requirements.txt
-```
-
----
-
-## ⚡ Quick Start
-
-### Local Setup
-
+## 7. Quick Start
+### Installation
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/SmartInboxRL.git
-cd SmartInboxRL
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Copy and configure environment variables
-cp .env.example .env
-# Edit .env — set API_BASE_URL, MODEL_NAME, HF_TOKEN
 ```
-### Run Inference
 
+### Running OpenAI Baseline
+1. Set your API Key:
+   ```bash
+   export OPENAI_API_KEY="sk-..."
+   ```
+2. Run the baseline evaluation:
+   ```bash
+   python baseline_openai.py --episodes 3 --difficulty all
+   ```
+
+## 8. Docker Setup
+Build and run the Streamlit dashboard locally:
 ```bash
-# LLM baseline agent — 20 episodes across all difficulties
-python inference.py --agent llm --episodes 20 --difficulty all
-
-# Rule-based agent
-python inference.py --agent rule --episodes 50 --difficulty medium
-
-# Random baseline (floor performance)
-python inference.py --agent random --episodes 100
+docker build -t smartinboxrl .
+docker run -p 7860:7860 --env-file .env smartinboxrl
 ```
 
-### Launch Dashboard
+## 9. HF Space
+The environment is deployed on Hugging Face Spaces with the `openenv` tag.
 
-```bash
-streamlit run app.py
-```
+**Deployment:** [SmartInboxRL on HF Spaces](https://huggingface.co/spaces/Arpitjain1903/SmartInboxRL)
 
-### Docker
-
-```bash
-docker build -t smart-inbox .
-docker run -p 7860:7860 \
-  -e API_BASE_URL=https://api.openai.com/v1 \
-  -e MODEL_NAME=gpt-4o-mini \
-  -e HF_TOKEN=your_token \
-  smart-inbox
-```
-
----
-
-## 🎯 Reward System
-
-SmartInboxRL uses a **dense, multi-component reward** designed to evaluate *how well* an agent performs, not just *if* it guesses correctly.
-
-### Reward Components
-
-| Component | Weight | Evaluation Method |
-|---|---|---|
-| 🧠 Intent Understanding | **30%** | Label-match F1 score |
-| 🎯 Priority Correctness | **20%** | Exact match |
-| ✅ Action Decision | **20%** | Exact match vs. gold label |
-| 💬 Response Quality | **30%** | Embedding cosine similarity |
-
-**Total reward ∈ [−1.0, +1.0]** per step.
-
-### Penalties (Anti-Cheating)
-
-| Behavior | Penalty |
+### Setting up Secrets for Judges
+To run the LLM baseline on HF Spaces, configure secrets in **Settings → Secrets**:
+| Secret | Value |
 |---|---|
-| Repeated identical actions | −0.20 per occurrence |
-| Ignoring a critical email | −0.50 |
-| Trivial / low-effort response | −0.30 |
+| `OPENAI_API_KEY` | Your OpenAI-compatible API key (e.g., Groq, OpenAI) |
+| `API_BASE_URL` | API endpoint (default: `https://api.openai.com/v1`) |
+| `MODEL_NAME` | Model identifier (default: `gpt-4o-mini`) |
 
-This ensures agents are **rewarded for thinking better, not guessing right**.
+## 10. Baseline Scores
+| Difficulty | Model | Avg Reward | Intent F1 | Priority Acc |
+| :--- | :--- | :--- | :--- | :--- |
+| Easy | GPT-4o-mini | 0.88 | 0.92 | 0.95 |
+| Medium | GPT-4o-mini | 0.74 | 0.81 | 0.88 |
+| Hard | GPT-4o-mini | 0.52 | 0.58 | 0.65 |
 
-### Semantic Scoring
+## 11. Extending the Environment
+- **Add Tasks**: Modify `environment/email_loader.py` to include new datasets or synthesis rules.
+- **Custom Agents**: Inherit from `BaseAgent` in `agents/base_agent.py` and implement the `act()` method.
 
-Response quality is measured using **embedding similarity** (`sentence-transformers/all-MiniLM-L6-v2`), not string matching. This allows:
+## 12. OpenEnv Compliance
 
-- Natural language variation in responses
-- Flexible phrasing while maintaining semantic correctness
-- Robust evaluation of generative outputs
+SmartInboxRL implements the [OpenEnv](https://openenv.dev) specification:
 
----
-
-## 📧 Task Dataset
-
-### Difficulty Tiers
-
-| Tier | Description | Example Scenario |
-|---|---|---|
-| 🟢 Easy | Clear, unambiguous signal | Spam detection, meeting confirmation |
-| 🟡 Medium | Single ambiguity + moderate noise | Scheduling + follow-up in one email |
-| 🔴 Hard | Multi-intent + noise + conflicting signals | Review request + lunch invite + hidden deadline |
-
-### Noise Injection
-
-Emails are perturbed to simulate real-world messiness:
-
-- **Typos** — `recieve`, `teh`, `wiht`
-- **Shorthand** — `pls`, `asap`, `lmk`, `fyi`
-- **Casing** — `URGENT`, `all caps subject lines`
-- **Ambiguity** — `can you check this?`, `get back to me`
-
-### Score Variance by Design
-
-SmartInboxRL deliberately calibrates difficulty to **separate agent performance**:
-
-```
-Easy   →  Mean reward > 0.65   (most agents succeed)
-Medium →  Mean reward ~ 0.45   (moderate spread)
-Hard   →  Mean reward < 0.35   (only strong agents perform well)
-Random →  Mean reward < 0.20   (floor)
-```
-
-This creates meaningful **performance differentiation** — critical for a real evaluation benchmark.
-
----
-
-## 🤖 Baseline Agents
-
-### 1. LLM Agent (`agents/llm_agent.py`)
-
-Uses any OpenAI-compatible API. Generates structured outputs via a chain-of-thought prompt:
-
-```
-Given this email: {email}
-Recent history: {history}
-
-Output:
-1. Intents: [list]
-2. Priority: low/medium/high/critical
-3. Action: reply/ignore/escalate/forward
-4. Response: [your reply]
-```
-
-### 2. Rule Agent (`agents/rule_agent.py`)
-
-Keyword-heuristic baseline. Useful for establishing a non-ML performance floor:
-- Scans for urgency keywords → priority bump
-- Detects question marks → reply action
-- Checks spam indicators → ignore action
-
-### 3. Random Agent (`agents/random_agent.py`)
-
-Uniform-random action selection. Provides the absolute floor for performance comparison.
-
----
-
-## 📊 Evaluation Philosophy
-
-SmartInboxRL evaluates agents across **three dimensions**:
-
-```
-┌─────────────────────────────────────────────┐
-│                                             │
-│   Understanding  →  Decision  →  Communication  │
-│                                             │
-│   "What does      "What should   "What
-│    this mean?"      I do?"        should I say?" │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-Unlike binary benchmarks, each dimension is scored independently and combined into a single composite reward. This allows **fine-grained capability analysis** — you can identify whether an agent fails at understanding, at decision-making, or at communication.
-
----
-
-## 🖥️ Interactive Dashboard
-
-`app.py` provides a Streamlit dashboard for:
-
-- **Live episode runner** — Select agent type, difficulty, and watch the agent work step-by-step
-- **Reward visualization** — Per-component radar charts and step-by-step reward bars
-- **Score history** — Episode-over-episode performance trends
-- **Agent comparison** — Side-by-side reward breakdowns across agent types
-
-```bash
-streamlit run app.py
-```
-
----
-
-## 🔬 Environment API
-
-```python
-import gymnasium as gym
-from environment.inbox_env import InboxEnv
-
-env = InboxEnv(difficulty="hard")
-obs, info = env.reset()
-
-done = False
-while not done:
-    action = agent.act(obs)          # agent produces structured action dict
-    obs, reward, terminated, truncated, info = env.step(action)
-    done = terminated or truncated
-
-print(f"Episode reward: {info['episode_reward']:.3f}")
-print(f"Breakdown: {info['reward_breakdown']}")
-```
-
-### Observation Space
-
-```python
-{
-    "email": str,              # current email text (possibly noisy)
-    "history": List[dict],     # previous (action, response) pairs
-    "step": int,               # current step in episode
-    "difficulty": str          # easy / medium / hard
-}
-```
-
-### Action Space
-
-```python
-{
-    "intents": List[str],      # detected intent labels
-    "priority": str,           # low / medium / high / critical
-    "action": str,             # reply / ignore / escalate / forward
-    "response": str            # generated response text
-}
-```
-
----
-
-## 🗺️ Roadmap
-
-- [x] Project specification and architecture
-- [ ] Phase 1 — Gymnasium environment core
-- [ ] Phase 2 — Composite reward engine + semantic scorer
-- [ ] Phase 3 — Curated task dataset (easy / medium / hard)
-- [ ] Phase 4 — Baseline agents (LLM / rule / random)
-- [ ] Phase 5 — Inference & batch evaluation CLI
-- [ ] Phase 6 — Streamlit interactive dashboard
-- [ ] Phase 7 — Docker containerization + HF Spaces deploy
-- [ ] Phase 8 — Full documentation
-
-### Future Directions
-
-- 📬 Full Enron dataset integration (streamed, privacy-filtered)
-- 🧵 Multi-email thread environments with inbox state
-- 📅 Calendar and task management integration
-- 🤝 Multi-agent collaborative inbox scenarios
-- 🔁 Online RL training loop (PPO / GRPO)
-
----
-
-## ☁️ Deployment
-
-### Hugging Face Spaces
-
-The included `Dockerfile` is compatible with Hugging Face Spaces.
-
-**Required environment variables:**
-
-| Variable | Description |
+| Requirement | Status |
 |---|---|
-| `API_BASE_URL` | OpenAI-compatible endpoint (e.g., `https://api.openai.com/v1`) |
-| `MODEL_NAME` | Model identifier (e.g., `gpt-4o-mini`) |
-| `HF_TOKEN` | Your Hugging Face token |
+| `reset()` → `(observation, info)` | ✅ Returns `EmailObservation` Pydantic model |
+| `step(action)` → `(obs, reward, terminated, truncated, info)` | ✅ Gymnasium-compatible |
+| `state()` → typed state model | ✅ Returns `EpisodeState` Pydantic model |
+| Reward range `[0.0, 1.0]` | ✅ Normalized via `(raw + 1) / 2` |
+| `openenv.yaml` with `openenv` tag | ✅ Included |
+| Docker support | ✅ `Dockerfile` + pre-cached embedding model |
+| HF Spaces deployment | ✅ With `openenv` tag |
 
-```bash
-docker build -t smart-inbox .
-docker run -p 7860:7860 smart-inbox
-```
-
----
-
-## 📦 Dependencies
-
-```
-gymnasium>=0.29.0
-numpy>=1.24.0
-pandas>=2.0.0
-sentence-transformers>=2.7.0
-streamlit>=1.35.0
-plotly>=5.22.0
-openai>=1.30.0
-python-dotenv>=1.0.0
-```
-
----
-
-## 🤝 Contributing
-
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Follow commit conventions: `type(scope): description`
-4. Submit a PR with empirical evidence of correctness
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-
-**SmartInboxRL** — *Because real intelligence handles the messy stuff.*
-
-Built with 🧠 + ☕ | Gymnasium · SentenceTransformers · Streamlit
-
-</div>
+## 13. Citation / License
+MIT License. Created by Arpit.

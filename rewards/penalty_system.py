@@ -103,6 +103,8 @@ class PenaltySystem:
             return 0.0
 
         response = action.get("response", "")
+        # Truncate to first 500 chars for performance — enough to detect trivial content
+        response = response[:500]
         if len(response.strip()) < self.min_response_length:
             return self.trivial_response_penalty
 

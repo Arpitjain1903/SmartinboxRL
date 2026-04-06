@@ -85,7 +85,7 @@ class EmailLoader:
     Parameters
     ----------
     difficulty : str
-        ``"easy"`` | ``"medium"`` | ``"hard"`` | ``"all"``
+        ``"easy"`` | ``"medium"`` | ``"hard"`` | ``"enron"`` | ``"all"``
     noise_intensity : float
         0.0 = no noise, 1.0 = heavy noise.  Applied only at load time.
     shuffle : bool
@@ -95,6 +95,8 @@ class EmailLoader:
     seed : int | None
         Fixed seed for reproducibility.
     """
+
+    _DIFFICULTIES = ("easy", "medium", "hard", "enron")
 
     def __init__(
         self,
@@ -146,7 +148,7 @@ class EmailLoader:
     def _load_tasks(self) -> list[dict[str, Any]]:
         tasks: list[dict[str, Any]] = []
         tiers = (
-            ["easy", "medium", "hard"]
+            list(self._DIFFICULTIES)
             if self.difficulty == "all"
             else [self.difficulty]
         )
@@ -161,6 +163,9 @@ class EmailLoader:
         return tasks
 
     def _noisy_copy(self, task: dict[str, Any]) -> dict[str, Any]:
+        if task.get("difficulty") == "enron":
+            return dict(task)
+            
         noisy = dict(task)
         intensity = self.noise_intensity
         # harder tasks get more noise

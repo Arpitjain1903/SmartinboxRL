@@ -1,130 +1,70 @@
-# GPT & Open Source Models Adapter
+# GPT and Open Source (OSS) Adapters for SmartInboxRL
 
-> **Everything in this file is optional.**
-> For canonical rules, see [PROJECT_RULES.md](../PROJECT_RULES.md).
-
-This adapter provides guidance for GPT models and open-source alternatives.
+This adapter provides best practices and settings tuning for deploying the `LLMAgent` with either OpenAI proprietary models (e.g. GPT-4o-mini) or locally deployed Open Source models (e.g. Llama-3, Mistral) via an OpenAI-compatible interface (Ollama, vLLM, Groq).
 
 ---
 
-## GPT Models
+## 1. Running Open-Source Local / Hosted Frameworks
 
-### Model Selection
+Since `llm_agent.py` uses the standard OpenAI python client, **any OSS proxy or framework that exposes an OpenAI-compatible endpoint works directly.** 
 
-| Model | Best For |
-|-------|----------|
-| **GPT-4o** | Balanced speed and quality, multimodal |
-| **GPT-4 Turbo** | Complex reasoning, large context |
-| **GPT-3.5** | Fast iterations, simple tasks |
-
----
-
-### Function Calling
-
-When function calling is available:
-
-```json
-{
-  "name": "run_verification",
-  "description": "Execute a verification command",
-  "parameters": {
-    "command": "npm test",
-    "expected": "All tests pass"
-  }
-}
+### Ollama (Local OSS)
+Run a model: `ollama run llama3.1`
+```bash
+API_BASE_URL=http://localhost:11434/v1
+MODEL_NAME=llama3.1
+OPENAI_API_KEY=ollama
 ```
 
-**Use for:**
-- Verification commands
-- File operations
-- External service checks
+### Groq (Cloud LLPU for OSS)
+Blazing fast execution on Mixtral/Llama for mass-evaluations:
+```bash
+API_BASE_URL=https://api.groq.com/openai/v1
+MODEL_NAME=llama-3.1-8b-instant
+OPENAI_API_KEY=gsk_your_groq_api_key_here
+```
 
----
-
-### Context Optimization
-
-GPT models may have smaller context than some alternatives:
-
-1. **Be selective** — Only load necessary files
-2. **Use search-first** — Critical for context efficiency
-3. **Summarize large files** — Extract relevant sections only
-
----
-
-## Open Source Models
-
-### General Guidance
-
-Open source models vary widely. General tips:
-
-| Consideration | Guidance |
-|---------------|----------|
-| **Context length** | Verify model's limit; adjust file loading |
-| **Instruction following** | Use explicit, structured prompts |
-| **Code quality** | May need more verification steps |
-| **Speed** | Varies by hardware; plan accordingly |
-
----
-
-### Local Deployment
-
-For locally-running models:
-
-1. **Resource planning** — Ensure adequate GPU/RAM
-2. **Latency expectations** — Adjust iteration speed assumptions
-3. **Fallback strategy** — Document when to switch to cloud models
-
----
-
-### Recommended Patterns
-
-**Structured prompts work better:**
-
-```markdown
-## Task
-{clear task description}
-
-## Context
-{relevant code snippets}
-
-## Expected Output
-{what you need back}
-
-## Constraints
-{any limitations or requirements}
+### vLLM (Custom Inference)
+```bash
+API_BASE_URL=http://your_vllm_host:8000/v1
+MODEL_NAME=meta-llama/Meta-Llama-3-8B-Instruct
+OPENAI_API_KEY=empty
 ```
 
 ---
 
-## Shorter Context Strategies
+## 2. Tuning for Open Source Models
 
-When working with limited context:
+Smaller (7B-8B parameter) OSS models may struggle slightly with implicit constraint reasoning.
 
-1. **Aggressive search-first** — Never load full files blindly
-2. **Incremental loading** — Add context as needed, not upfront
-3. **State snapshots more frequently** — Prevent context overflow
-4. **Split large tasks** — Smaller plans, more waves
-
----
-
-## Anti-Patterns
-
-❌ **Assuming GPT-4 context** — Verify actual model limits
-❌ **Complex nested prompts** — Keep structure flat and clear
-❌ **Ignoring model limits** — Quality crashes hard past context limit
+- **Aggressive Formatting Prompts**: Llama 3 and Mistral 7B requires explicit reminders. Add: `You MUST return valid JSON. Do not include markdown codeblocks (\`\`\`json). DO NOT write 'Here is your json'. Just the JSON.`
+- **Parsing Weaknesses**: Smaller parameter models frequently misspell priority categories (`cirtical` vs `critical`). The `validate_action()` hook in `environment/action_space.py` handles the worst of it, but enforcing spelling in the system prompt is essential for good evaluation scores.
+- **Lower Output Tokens**: Set `max_tokens=64` to `128`. We do not want conversational drift. We are extracting discrete properties.
+- **Zero Temperature**: Use `temperature=0.0` or `top_p=0.1`. OSS models at higher temperatures often ignore the structural system prompt.
 
 ---
 
-## Model-Specific Files
+## 3. Tuning for GPT-4o / GPT-4o-mini
 
-Not required, but if organizing:
+OpenAI's official API supports sophisticated features worth leveraging:
 
+### JSON Mode (Response Format)
+Instead of relying on prompt parsing, strictly define the JSON response payload required. In `agents/llm_agent.py`:
+
+```python
+response = self.client.chat.completions.create(
+    model=self.model,
+    messages=[
+        {"role": "system", "content": _SYSTEM_PROMPT},
+        {"role": "user", "content": user_prompt},
+    ],
+    temperature=self.temperature,
+    max_tokens=256,
+    response_format={ "type": "json_object" } # <-- ENSURE STRICT JSON
+)
 ```
-.openai/           # For OpenAI API configuration
-.ollama/           # For Ollama local models
-.llm/              # Generic local LLM config
-```
 
----
+Ensure your `_SYSTEM_PROMPT` contains the word "JSON", or the API call will fail when `response_format` is active.
 
-*See PROJECT_RULES.md for canonical requirements.*
+### Context
+OpenAI models handle context up to 128k efficiently. The default `history_window=3` (up to 3 emails of trailing history) is perfect. Unlike local OSS models, supplying excess history to GPT-4o does not degrade its instruction-following accuracy.

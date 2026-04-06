@@ -29,8 +29,13 @@ def _get_model():
         try:
             from sentence_transformers import SentenceTransformer
 
+            import torch
             logger.info("Loading embedding model: %s", _MODEL_NAME)
             _model = SentenceTransformer(_MODEL_NAME)
+            _model.eval()
+            torch.manual_seed(42)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(42)
             logger.info("Embedding model loaded successfully")
         except Exception as exc:
             logger.warning(
@@ -49,8 +54,18 @@ def _get_model():
 class EmbeddingScorer:
     """Score a candidate response against gold reference(s)."""
 
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self._model = None  # lazy
+        # Ensure the lazy model is only set once per process
+        if getattr(self, "_model", None) is None:
+            self._model = None  # lazy, will be loaded on first use
+
 
     @property
     def model(self):

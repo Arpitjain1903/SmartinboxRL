@@ -42,6 +42,14 @@ class RewardEngine:
         self.weights = dict(self.DEFAULT_WEIGHTS)
         if weights:
             self.weights.update(weights)
+        # Normalize weights to ensure they sum to 1.0
+        total = sum(self.weights.values())
+        if total == 0:
+            raise ValueError("RewardEngine weights sum to zero, cannot normalize.")
+        for k in self.weights:
+            self.weights[k] = self.weights[k] / total
+        # Verify normalization within tolerance
+        assert abs(sum(self.weights.values()) - 1.0) < 1e-6, "RewardEngine weights must sum to 1.0"
 
         self._penalty = penalty_system or PenaltySystem()
         self._scorer = embedding_scorer or EmbeddingScorer()
@@ -92,7 +100,9 @@ class RewardEngine:
         # Penalties
         penalty = self._penalty.compute(email, action, action_log)
 
-        total = max(-1.0, min(1.0, weighted + penalty))
+        # Clamp raw score to [-1, 1] then normalize to [0, 1] for OpenEnv spec
+        raw = max(-1.0, min(1.0, weighted + penalty))
+        total = (raw + 1.0) / 2.0
 
         breakdown = {
             "intent": round(intent_score, 4),

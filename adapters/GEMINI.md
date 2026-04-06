@@ -1,92 +1,61 @@
-# Gemini Adapter
+# Gemini Adapter for SmartInboxRL
 
-> **Everything in this file is optional.**
-> For canonical rules, see [PROJECT_RULES.md](../PROJECT_RULES.md).
-
-This adapter provides optional enhancements for Gemini models in Antigravity.
+This adapter provides specific guidance for using Google's Gemini models (e.g., Gemini 1.5 Pro, 1.5 Flash) as the underlying model for the `LLMAgent` in SmartInboxRL. It helps adapt Gemini's characteristics into the rigid JSON structure expected by the benchmark.
 
 ---
 
-## Model Selection
+## 1. Context Optimization & Generation Speeds
 
-### Flash vs Pro
+Gemini natively supports exceptionally large context windows (up to 2M tokens). However, for SmartInboxRL:
 
-| Model Type | Best For |
-|------------|----------|
-| **Flash** | Quick iterations, simple edits, high-volume tasks |
-| **Pro** | Complex planning, large refactors, deep analysis |
-
-**Default recommendation:** Start with Pro for planning, switch to Flash for implementation.
+- **Do NOT load the whole episode upfront.** A large context drastically increases Time-To-First-Token (TTFT) and evaluation latency.
+- Instead, maintain the `history_window=3` (or up to 5) limit in the `inbox_env.py`. This keeps inference latency under 1 second per step.
+- **Flash vs. Pro:** Use **Gemini 1.5 Flash** for default baseline evaluations. It is faster, cheaper, and more than capable of handling the straightforward heuristic parsing required by the environment. Reserve **Gemini 1.5 Pro** only if testing the `Hard` tier emails (`data/tasks/hard_tasks.json`) specifically for nuanced intent understanding.
 
 ---
 
-## Context Window Optimization
+## 2. System Prompt Customization for JSON Output
 
-Gemini models often have large context windows. Optimize usage:
+Gemini models tend to excel at instruction following, especially when response formats are declared definitively in the system instructions.
 
-1. **Load full files strategically** — Large context allows it, but still prefer search-first
-2. **Batch related files** — Group related code in single context load
-3. **Clear separation** — Use XML tags to separate file contents
-
-### Context Loading Pattern
-
-```xml
-<file path="src/auth/login.ts">
-{file contents}
-</file>
-
-<file path="src/auth/types.ts">
-{file contents}
-</file>
-
-<task>
-{your task here}
-</task>
-```
-
----
-
-## Grounding
-
-When available, use grounding for:
-
-- Checking latest documentation
-- Verifying API behaviors
-- Validating external service states
-
-**Not for:** Code implementation (use codebase content).
-
----
-
-## Code Execution
-
-If code execution sandbox is available:
-
-- Use for verification commands
-- Use for testing snippets
-- Document outputs in SUMMARY.md
-
----
-
-## Integration with .gemini/
-
-The `.gemini/GEMINI.md` file can reference this adapter:
-
+**Recommended Prompt Adjustments:**
 ```markdown
-# In .gemini/GEMINI.md
+You are an intelligent email assistant. Analyze the email and respond with a JSON object.
 
-For canonical rules, see PROJECT_RULES.md.
-For Gemini-specific tips, see adapters/GEMINI.md.
+<json_formatting>
+Return a clean, valid JSON object ONLY. No markdown (```json), no explanations.
+Your JSON must strictly match these exact keys and values:
+
+1. "intents": list of valid strings
+2. "priority": "low" | "medium" | "high" | "critical"
+3. "action": "reply" | "ignore" | "escalate" | "forward"
+4. "response": string
+</json_formatting>
 ```
 
 ---
 
-## Anti-Patterns
+## 3. Using `response_mime_type` (Recommended)
 
-❌ **Loading entire codebase** — Even with large context, quality degrades
-❌ **Ignoring context thresholds** — 50% is still the quality boundary
-❌ **Skipping STATE.md** — Context window size doesn't replace persistent state
+When hitting the Google Gemini API directly (via `google/generative-ai`), do not rely on prompt-engineering alone to ensure JSON parsing in `llm_agent.py`. Instead, natively enforce JSON mode via the generation config.
+
+Update your API call to include:
+```python
+generation_config = {
+    "temperature": 0.0,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 256,
+    "response_mime_type": "application/json",
+}
+
+response = chat_session.send_message(prompt, generation_config=generation_config)
+```
+
+Enabling `response_mime_type=application/json` guarantees that the text returned by Gemini is syntactically valid JSON, eliminating the need for complex regex extraction or cleanup.
 
 ---
 
-*See PROJECT_RULES.md for canonical requirements.*
+## 4. Grounding
+
+Disable any automated search or Google Grounding functions. For SmartInboxRL, the model must ONLY rely on the immediate text provided in the `body` and `subject`. Grounding leads to hallucinations or off-policy replies (e.g., pulling real-world knowledge instead of sticking strictly to the dummy tasks).

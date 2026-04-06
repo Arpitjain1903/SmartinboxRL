@@ -16,6 +16,7 @@ import numpy as np
 from environment.action_space import validate_action
 from environment.email_loader import EmailLoader
 from environment.state import EpisodeState
+from models import EmailObservation, EmailReward, EpisodeState as StateModel
 
 
 class InboxEnv(gym.Env):
@@ -76,9 +77,13 @@ class InboxEnv(gym.Env):
 
     def reset(
         self, *, seed: int | None = None, options: dict | None = None
-    ) -> tuple[dict[str, Any], dict[str, Any]]:
+    ) -> tuple[EmailObservation, dict[str, Any]]:
         """Reset the environment for a new episode."""
-        super().reset(seed=seed)
+        if seed is not None:
+            super().reset(seed=seed)
+            self._loader.seed = seed # ensure loader also uses the seed
+        else:
+            super().reset()
 
         emails = self._loader.get_episode_emails()
         self._state = EpisodeState(
@@ -86,7 +91,26 @@ class InboxEnv(gym.Env):
             difficulty=self.difficulty,
         )
 
-        obs = self._build_obs()
+        obs_dict = self._build_obs()
+
+        # Wrap in Pydantic model with all fields
+        if obs_dict:
+            email_data = obs_dict["email"]
+            obs = EmailObservation(
+                email=email_data.get("body", ""),
+                email_subject=email_data.get("subject", ""),
+                email_sender=email_data.get("sender", ""),
+                email_id=email_data.get("id", ""),
+                history=obs_dict["history"],
+                step=obs_dict["step"],
+                total_steps=obs_dict.get("total_steps", self._state.num_emails),
+                difficulty=obs_dict["difficulty"],
+            )
+        else:
+            obs = EmailObservation(
+                email="", history=[], step=0, difficulty=self.difficulty
+            )
+
         info = {
             "total_emails": self._state.num_emails,
             "difficulty": self.difficulty,
@@ -95,7 +119,7 @@ class InboxEnv(gym.Env):
 
     def step(
         self, action: dict[str, Any]
-    ) -> tuple[dict[str, Any], float, bool, bool, dict[str, Any]]:
+    ) -> tuple[EmailObservation | dict, float, bool, bool, dict[str, Any]]:
         """Execute one step: process agent action for the current email.
 
         Parameters
@@ -111,6 +135,7 @@ class InboxEnv(gym.Env):
             raise RuntimeError("Call reset() before step()")
 
         # Validate / normalise action
+        from environment.action_space import validate_action
         clean_action = validate_action(action)
 
         email = self._state.current_email
@@ -137,12 +162,38 @@ class InboxEnv(gym.Env):
 
         terminated = self._state.done
         truncated = False
-        obs = self._build_obs() if not terminated else {}
+        obs_dict = self._build_obs() if not terminated else {}
+
+        if obs_dict:
+            email_data = obs_dict["email"]
+            obs = EmailObservation(
+                email=email_data.get("body", ""),
+                email_subject=email_data.get("subject", ""),
+                email_sender=email_data.get("sender", ""),
+                email_id=email_data.get("id", ""),
+                history=obs_dict["history"],
+                step=obs_dict["step"],
+                total_steps=obs_dict.get("total_steps", 0),
+                difficulty=obs_dict["difficulty"],
+            )
+        else:
+            obs = {}  # empty dict on terminal step (Gym standard)
+
+        # Create Reward model
+        reward_obj = EmailReward(
+            total_score=reward,
+            intent_score=breakdown.get("intent", 0.0),
+            priority_score=breakdown.get("priority", 0.0),
+            action_score=breakdown.get("action", 0.0),
+            response_score=breakdown.get("response", 0.0),
+            breakdown=breakdown
+        )
 
         info = {
             "step": self._state.current_step,
             "step_reward": reward,
             "reward_breakdown": breakdown,
+            "reward_object": reward_obj,
             "episode_reward": self._state.total_reward,
             "remaining": self._state.remaining,
             "email_id": email.get("id"),
@@ -181,6 +232,28 @@ class InboxEnv(gym.Env):
                 default=str,
             )
         return summary
+
+    def state(self) -> StateModel:
+        """Return the current environment state as a typed Pydantic model."""
+        if self._state is None:
+            return StateModel(
+                current_email="",
+                step=0,
+                difficulty=self.difficulty,
+                done=False,
+                history=[],
+                total_reward=0.0
+            )
+
+        email = self._state.current_email
+        return StateModel(
+            current_email=email.get("body", "") if email else "",
+            step=self._state.current_step,
+            difficulty=email.get("difficulty", self.difficulty) if email else self.difficulty,
+            done=self._state.done,
+            history=self._state.recent_history(self.history_window),
+            total_reward=self._state.total_reward
+        )
 
     # ------------------------------------------------------------------
     # Observation builder
@@ -238,15 +311,32 @@ class InboxEnv(gym.Env):
     # ------------------------------------------------------------------
 
     def get_episode_summary(self) -> dict[str, Any]:
-        """Return a full summary of the completed episode."""
+        """Return a full summary of the completed episode.
+
+        Notes
+        -----
+        ``total_reward`` is the raw cumulative sum across all steps and is
+        unbounded (e.g. 15 emails × 1.0/step = 15.0 max).  Use
+        ``mean_step_reward`` for cross-episode / cross-difficulty comparisons
+        — it is normalized to [0.0, 1.0] per step.
+        """
         if self._state is None:
             return {}
+        steps = max(self._state.current_step, 1)  # avoid div-by-zero
+        mean_step = round(self._state.total_reward / steps, 4)
+        # Normalize each component breakdown by steps as well
+        norm_breakdown = {
+            k: round(v / steps, 4)
+            for k, v in self._state.reward_breakdown.items()
+        }
         return {
             "total_reward": round(self._state.total_reward, 4),
+            "mean_step_reward": mean_step,
             "steps": self._state.current_step,
             "reward_breakdown": {
                 k: round(v, 4) for k, v in self._state.reward_breakdown.items()
             },
+            "norm_reward_breakdown": norm_breakdown,
             "history": [
                 {
                     "email_id": h.email_id,

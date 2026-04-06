@@ -42,49 +42,77 @@ _AGENT_MAP = {
     "llm": lambda _: LLMAgent(),
 }
 
+# Primary comparison metric: mean_step_reward (normalized [0, 1] per step)
+# total_reward is the raw cumulative sum and is unbounded by episode length.
+
 
 # ---------------------------------------------------------------------------
 # Evaluation core
 # ---------------------------------------------------------------------------
+
+def _run_single_episode(agent_name: str, difficulty: str, seed: int, ep_idx: int):
+    """Run a single episode and return its summary. Used by ThreadPoolExecutor."""
+    agent = _AGENT_MAP[agent_name](seed + ep_idx)
+    env = InboxEnv(difficulty=difficulty, seed=seed + ep_idx)
+
+    agent.reset()
+    obs, _ = env.reset()
+
+    while True:
+        action = agent.act(obs)
+        obs, reward, terminated, truncated, info = env.step(action)
+        if terminated or truncated:
+            break
+
+    return env.get_episode_summary()
+
 
 def evaluate_agent(
     agent_name: str,
     difficulty: str,
     episodes: int,
     seed: int,
+    max_workers: int = 4,
 ) -> dict[str, Any]:
-    """Run multiple episodes for one (agent, difficulty) combo."""
+    """Run multiple episodes for one (agent, difficulty) combo.
 
-    agent = _AGENT_MAP[agent_name](seed)
-    env = InboxEnv(difficulty=difficulty, seed=seed)
+    Uses ThreadPoolExecutor for parallel execution when possible.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
-    rewards = []
-    breakdowns = {"intent": [], "priority": [], "action": [], "response": [], "penalty": []}
+    # primary metric: mean_step_reward (normalized, [0, 1])
+    step_rewards: list[float] = []
+    total_rewards: list[float] = []
+    breakdowns: dict[str, list[float]] = {
+        "intent": [], "priority": [], "action": [], "response": [], "penalty": []
+    }
 
-    for _ in range(episodes):
-        agent.reset()
-        obs, _ = env.reset()
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = {
+            pool.submit(_run_single_episode, agent_name, difficulty, seed, ep): ep
+            for ep in range(episodes)
+        }
+        for future in as_completed(futures):
+            summary = future.result()
+            step_rewards.append(summary["mean_step_reward"])
+            total_rewards.append(summary["total_reward"])
+            norm_bd = summary.get("norm_reward_breakdown", {})
+            for k in breakdowns:
+                breakdowns[k].append(norm_bd.get(k, 0.0))
 
-        while True:
-            action = agent.act(obs)
-            obs, reward, terminated, truncated, info = env.step(action)
-            if terminated or truncated:
-                break
-
-        summary = env.get_episode_summary()
-        rewards.append(summary["total_reward"])
-        for k in breakdowns:
-            breakdowns[k].append(summary["reward_breakdown"].get(k, 0.0))
-
-    rewards_arr = np.array(rewards)
+    sr = np.array(step_rewards)
+    tr = np.array(total_rewards)
     return {
         "agent": agent_name,
         "difficulty": difficulty,
         "episodes": episodes,
-        "mean_reward": round(float(rewards_arr.mean()), 4),
-        "std_reward": round(float(rewards_arr.std()), 4),
-        "min_reward": round(float(rewards_arr.min()), 4),
-        "max_reward": round(float(rewards_arr.max()), 4),
+        # --- PRIMARY (normalized, [0, 1] per step) ---
+        "mean_reward": round(float(sr.mean()), 4),
+        "std_reward": round(float(sr.std()), 4),
+        "min_reward": round(float(sr.min()), 4),
+        "max_reward": round(float(sr.max()), 4),
+        # --- reference (unbounded cumulative sum) ---
+        "mean_total_episode_reward": round(float(tr.mean()), 4),
         "component_means": {
             k: round(float(np.mean(v)), 4) for k, v in breakdowns.items()
         },
@@ -99,26 +127,27 @@ def print_table(results: list[dict[str, Any]]):
     """Print a comparative results table."""
     header = (
         f"{'Agent':<10} {'Difficulty':<10} {'Episodes':<8} "
-        f"{'Mean':>8} {'Std':>8} {'Min':>8} {'Max':>8}"
+        f"{'Mean/Step':>10} {'Std':>8} {'Min':>8} {'Max':>8}"
     )
-    print(f"\n{'='*70}")
+    print(f"\n{'='*72}")
     print("  SmartInboxRL — Comparative Evaluation")
-    print(f"{'='*70}")
+    print("  Metric: mean_step_reward  (normalized per-step, range [0.0, 1.0])")
+    print(f"{'='*72}")
     print(f"  {header}")
     print(f"  {'-'*len(header)}")
 
     for r in results:
         row = (
             f"  {r['agent']:<10} {r['difficulty']:<10} {r['episodes']:<8} "
-            f"{r['mean_reward']:>+8.4f} {r['std_reward']:>8.4f} "
+            f"{r['mean_reward']:>+10.4f} {r['std_reward']:>8.4f} "
             f"{r['min_reward']:>+8.4f} {r['max_reward']:>+8.4f}"
         )
         print(row)
 
-    print(f"{'='*70}")
+    print(f"{'='*72}")
 
-    # Component breakdown
-    print(f"\n  Component Breakdown (means across all episodes):")
+    # Component breakdown (all normalized)
+    print(f"\n  Component Breakdown — mean_step values (normalized, per-step):")
     print(f"  {'Agent':<10} {'Diff':<8} {'Intent':>8} {'Priority':>8} {'Action':>8} {'Response':>8} {'Penalty':>8}")
     print(f"  {'-'*62}")
     for r in results:
@@ -141,16 +170,16 @@ def main():
     parser.add_argument(
         "--agents",
         nargs="+",
-        default=["random", "rule"],
+        default=["random", "rule", "llm"],
         choices=list(_AGENT_MAP),
-        help="Agents to evaluate (default: random rule)",
+        help="Agents to evaluate (default: random rule llm)",
     )
     parser.add_argument(
         "--difficulties",
         nargs="+",
-        default=["easy", "medium", "hard"],
-        choices=["easy", "medium", "hard", "all"],
-        help="Difficulty tiers (default: easy medium hard)",
+        default=["easy", "medium", "hard", "enron"],
+        choices=["easy", "medium", "hard", "enron", "all"],
+        help="Difficulties to evaluate (default: easy medium hard enron)",
     )
     parser.add_argument(
         "--episodes",

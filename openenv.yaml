@@ -1,0 +1,43 @@
+name: SmartInboxRL
+version: "1.0.0"
+description: "A Gymnasium-compatible OpenEnv environment for evaluating AI agents on realistic email triage tasks with noise injection."
+author: "Arpit"
+task_type: email_triage
+real_world_domain: enterprise_productivity
+difficulty_levels: [easy, medium, hard]
+action_space:
+  type: structured
+  fields:
+    intents: "List[str] — extracted email intents"
+    priority: "Literal[low, medium, high, critical]"
+    action: "Literal[reply, ignore, escalate, forward]"
+    response: "str — drafted reply"
+observation_space:
+  type: structured
+  fields:
+    email: "str — noisy email text"
+    history: "List[dict] — conversation history"
+    step: "int — current step in episode"
+    difficulty: "str — task difficulty level"
+reward_range: [0.0, 1.0]
+reward_components:
+  intent_score: 0.30
+  priority_score: 0.20
+  action_score: 0.20
+  response_score: 0.30
+tasks:
+  - name: simple_reply
+    difficulty: easy
+    description: "Single-intent email needing a polite reply"
+  - name: multi_intent_triage
+    difficulty: medium
+    description: "Multi-intent email with ambiguous priority requiring escalation or forward decision"
+  - name: adversarial_noise
+    difficulty: hard
+    description: "Heavily noisy email with typos, shorthand, multiple conflicting intents"
+entrypoint: environment/inbox_env.py
+baseline_script: baseline_openai.py
+verify_script: verify_openenv.py
+docker_image: smartinboxrl
+hf_space: true
+tags: [openenv, email-triage, rl-environment, nlp]

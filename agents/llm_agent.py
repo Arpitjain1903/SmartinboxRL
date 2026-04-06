@@ -145,22 +145,24 @@ class LLMAgent(BaseAgent):
     @staticmethod
     def _parse_response(raw: str) -> dict[str, Any]:
         """Best-effort JSON extraction from the LLM output."""
-        # Strip markdown fences if present
-        cleaned = re.sub(r"```(?:json)?\s*", "", raw)
-        cleaned = cleaned.strip().rstrip("`")
-
         try:
-            data = json.loads(cleaned)
-        except json.JSONDecodeError:
-            # Try to find JSON object in the text
-            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            # First try finding a json code block
+            match = re.search(r"```(?:json)?\s*(.*?)\s*```", raw, re.DOTALL | re.IGNORECASE)
             if match:
-                try:
-                    data = json.loads(match.group())
-                except json.JSONDecodeError:
-                    return LLMAgent._fallback_action()
+                cleaned = match.group(1)
             else:
-                return LLMAgent._fallback_action()
+                # If no code block, try to find {...}
+                match = re.search(r"(\{.*\})", raw, re.DOTALL)
+                if match:
+                    cleaned = match.group(1)
+                else:
+                    cleaned = raw
+
+            cleaned = cleaned.strip()
+            data = json.loads(cleaned)
+        except Exception as exc:
+            logger.error("JSON parsing failed: %s", exc)
+            return LLMAgent._fallback_action()
 
         # Validate / normalise
         intents = data.get("intents", ["information_sharing"])

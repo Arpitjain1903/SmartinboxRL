@@ -31,8 +31,16 @@ SmartInboxRL/
 │   └── tasks/
 │       ├── easy_tasks.json   # 15 unambiguous email tasks
 │       ├── medium_tasks.json # 15 dual-intent email tasks
-│       └── hard_tasks.json   # 15 multi-intent + noisy email tasks
+│       ├── hard_tasks.json   # 15 multi-intent + noisy email tasks
+│       └── enron_tasks.json  # 300 auto-labeled real-world emails (Kaggle)
 │   └── noise_profiles.json   # Typos, shorthand, casing rules
+│
+├── 📂 scripts/
+│   └── fetch_and_label_enron.py # Kaggle pipeline: download & auto-label Enron
+│
+├── 📂 tests/
+│   ├── test_action_space.py  # Unit tests for action validation
+│   └── test_rewards.py       # Unit tests for all scoring & penalties
 │
 ├── inference.py              # CLI — run evaluation episodes
 ├── evaluate.py               # CLI — batch evaluation + comparison table
@@ -96,7 +104,7 @@ pip install -r requirements.txt
 | `openai` | LLM agent API client |
 | `python-dotenv` | Load `.env` file for secrets |
 
-> **Note:** `sentence-transformers` will download the `all-MiniLM-L6-v2` model (~80 MB) **on first run**. This is automatic and happens once. Subsequent runs are instant.
+> **Note:** `sentence-transformers` will download the `all-MiniLM-L6-v2` model (~80 MB) **on first run**. This is automatic and happens =once. Subsequent runs are instant.
 
 ### Step 4 — Configure Environment Variables *(for LLM agent only)*
 
@@ -112,7 +120,20 @@ MODEL_NAME=gpt-4o-mini
 OPENAI_API_KEY=sk-your-key-here
 ```
 
-> If you only want to use the `rule` or `random` agents, you can skip this step entirely.
+> If you only want to use the `rule` or `random` agents, you can skip this step entirely. Note: The Streamlit UI (`app.py`) now also supports injecting your LLM configuration natively from the sidebar!
+
+### Step 5 — Prepare Enron Evaluation Dataset *(Optional)*
+
+If you want to benchmark against the real-world Enron dataset (300 mapped emails), you'll need to run the auto-fetching pipeline first. This requires Kaggle access credentials:
+
+```bash
+# Provide your Kaggle Access Token or API string
+export KAGGLE_PAT="KGAT_your_token_here"
+
+# Run the fetch and auto-label pipeline (approx ~10 mins)
+python scripts/fetch_and_label_enron.py
+```
+This script downloads a 1.7GB cache of the Kaggle dataset, parses the first 300 records, uses your LLMAgent to synthetically label them with proxy "gold" standards (sleeping 2s per call to respect `Groq` rate limits natively), and renders a fresh `enron_tasks.json`.
 
 ---
 
@@ -149,7 +170,7 @@ python inference.py [options]
 |---|---|---|
 | `--agent` | `rule` | Agent to use: `random`, `rule`, `llm` |
 | `--episodes` | `10` | Number of episodes to run |
-| `--difficulty` | `all` | Email tier: `easy`, `medium`, `hard`, `all` |
+| `--difficulty` | `all` | Email tier: `easy`, `medium`, `hard`, `enron`, `all` |
 | `--max-steps` | `all` | Cap emails per episode |
 | `--seed` | `42` | Random seed for reproducibility |
 | `--verbose` / `-v` | off | Print step-by-step details |
@@ -212,7 +233,7 @@ python evaluate.py [options]
 | Flag | Default | Description |
 |---|---|---|
 | `--agents` | `random rule` | One or more agents to compare |
-| `--difficulties` | `easy medium hard` | Difficulty tiers to test |
+| `--difficulties` | `easy medium hard enron` | Difficulty tiers to test |
 | `--episodes` | `10` | Episodes per (agent × difficulty) combo |
 | `--seed` | `42` | Reproducibility seed |
 | `-o` / `--output` | none | Export results to JSON |
@@ -279,6 +300,18 @@ docker run -p 7860:7860 \
 # Make sure .env is populated first
 
 ```
+
+---
+
+## ✅ Running Unit Tests
+
+To verify the mathematical integrity of the reward components and action parsing bindings:
+
+```bash
+pip install pytest
+pytest tests/ -v
+```
+It encompasses >40 specific edge cases including F1 calculation fidelity, anti-cheat penalty accumulation tracking, and dataset parsing stability.
 
 ---
 
