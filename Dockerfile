@@ -9,30 +9,41 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     git \
-    && rm -rf /lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker layer caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies (no heavy model pre-download — stays within 8 GB limit)
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
 COPY . .
 
-# Pre-download embedding model so it's cached in the image (no network needed at runtime)
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
+# ---------------------------------------------------------------------------
+# Required environment variables (must be supplied at runtime via --env-file)
+# ---------------------------------------------------------------------------
+# API_BASE_URL  — OpenAI-compatible API endpoint
+# MODEL_NAME    — LLM model identifier
+# HF_TOKEN      — Hugging Face / API key
 
-# Set environment variables
+ENV API_BASE_URL=""
+ENV MODEL_NAME=""
+ENV HF_TOKEN=""
+ENV OPENAI_API_KEY=""
+
+# Runtime settings
 ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # Expose port 7860 for Hugging Face Spaces
 EXPOSE 7860
 
-# Add a healthcheck to ensure Streamlit is running
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+# Healthcheck for Streamlit
+HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
     CMD curl --fail http://localhost:7860/_stcore/health || exit 1
 
-# Command to run the application (Streamlit dashboard)
+# Default: run the Streamlit dashboard
+# Override with: docker run ... python inference.py
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]

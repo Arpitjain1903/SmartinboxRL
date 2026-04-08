@@ -13,8 +13,17 @@ Launch
 
 from __future__ import annotations
 
+import json
+import os
+import sqlite3
+import subprocess
 import sys
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -22,15 +31,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import streamlit as st
-import plotly.graph_objects as go
-import numpy as np
-import pandas as pd
-
 from environment.inbox_env import InboxEnv
 from agents.random_agent import RandomAgent
 from agents.rule_agent import RuleAgent
 from agents.llm_agent import LLMAgent
+from agents.simple_rl_agent import SimpleRLAgent
+from agents.rl_agent import RLAgent
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -430,6 +436,15 @@ def _make_agent(name: str, seed: int = 42, llm_config: dict | None = None):
             model=cfg.get("model") or None,
             api_key=cfg.get("api_key") or None,
         )
+    elif name == "simple_rl":
+        return SimpleRLAgent(seed=seed)
+    elif name == "rl_llm":
+        cfg = llm_config or {}
+        return RLAgent(
+            api_base=cfg.get("api_base") or None,
+            model=cfg.get("model") or None,
+            api_key=cfg.get("api_key") or None,
+        )
     raise ValueError(f"Unknown agent: {name}")
 
 
@@ -513,40 +528,30 @@ with st.sidebar:
       </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:10px; margin-bottom:20px;">
+      <div style="font-size:11px; font-weight:600; color:#fbbf24; font-family:'Space Mono',monospace; display:flex; align-items:center; gap:6px;">
+        <span class="glow-dot" style="background:#fbbf24; box-shadow:0 0 8px #fbbf24;"></span> EVALUATION MODE
+      </div>
+      <div style="font-size:12px; color:rgba(148,163,184,0.8); margin-top:4px; line-height:1.4;">
+        Baseline agents do not learn or save state between runs.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     agent_type = st.selectbox(
         "Agent Type",
-        ["rule", "random", "llm"],
+        ["rule", "random", "llm", "simple_rl", "rl_llm"],
         index=0,
-        help="Select the agent to evaluate",
+        help="Select the agent to evaluate. simple_rl and rl_llm are trained RL agents.",
     )
 
-    llm_config: dict = {}
-    if agent_type == "llm":
-        st.markdown("""
-        <div style="margin:14px 0 10px; font-size:10px; font-weight:600; letter-spacing:0.1em;
-                    text-transform:uppercase; color:rgba(99,102,241,0.7);
-                    font-family:'Space Mono',monospace;">
-          LLM Configuration
-        </div>
-        """, unsafe_allow_html=True)
-        import os
-        llm_config["api_key"] = st.text_input(
-            "API Key",
-            value=os.getenv("OPENAI_API_KEY", ""),
-            type="password",
-        )
-        llm_config["api_base"] = st.text_input(
-            "API Base URL",
-            value=os.getenv("API_BASE_URL", "https://api.openai.com/v1"),
-        )
-        llm_config["model"] = st.text_input(
-            "Model Name",
-            value=os.getenv("MODEL_NAME", "gpt-4o-mini"),
-        )
-        if not llm_config["api_key"]:
-            st.warning("Set your API key to use LLM agent.")
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+    llm_config: dict = {
+        "api_key": os.getenv("OPENAI_API_KEY"),
+        "api_base": os.getenv("API_BASE_URL"),
+        "model": os.getenv("MODEL_NAME")
+    }
 
     difficulty = st.selectbox(
         "Difficulty",
@@ -554,11 +559,11 @@ with st.sidebar:
         index=0,
     )
 
-    num_episodes = st.slider("Test Batches", min_value=1, max_value=50, value=5)
-    seed = st.number_input("Seed", value=42, step=1)
+    num_episodes = st.slider("Test Batches", min_value=1, max_value=50, value=5, help="Number of email sets to run. More batches provide a more stable average score.")
+    seed = st.number_input("Seed", value=42, step=1, help="Ensures exactly repeatable 'random' choices. Change to see different behavior.")
 
     st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-    run_button = st.button("▶  Run Evaluation", type="primary", use_container_width=True)
+    run_button = st.button("▶  Run Evaluation", type="primary", width="stretch")
 
     st.markdown("""
     <div style="margin-top:24px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.05);">
@@ -612,7 +617,7 @@ with st.sidebar:
 # Tabs
 # ---------------------------------------------------------------------------
 
-tab_eval, tab_interactive = st.tabs(["  Evaluation Dashboard  ", "  Interactive Panel  "])
+tab_eval, tab_interactive, tab_training = st.tabs(["  Evaluation Dashboard  ", "  Interactive Panel  ", "  🧠 Training Mode  "])
 
 
 # ── Evaluation tab ──────────────────────────────────────────────────────────
@@ -796,8 +801,8 @@ with tab_eval:
                 return ""
 
             st.dataframe(
-                df.style.applymap(_color_reward, subset=["reward"]),
-                use_container_width=True,
+                df.style.map(_color_reward, subset=["reward"]),
+                width="stretch",
                 height=360,
             )
 
@@ -915,7 +920,7 @@ with tab_interactive:
             value="Please submit your timesheets by 5 PM today, otherwise payroll will be delayed.",
             height=140,
         )
-        submitted = st.form_submit_button("  Submit to Agent  ", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("  Submit to Agent  ", type="primary", width="stretch")
 
     if submitted:
         with st.spinner("Agent analysing…"):
@@ -990,3 +995,286 @@ with tab_interactive:
 
             except Exception as e:
                 st.error(f"Error running agent: {e}")
+
+
+# ── Training Mode tab ────────────────────────────────────────────────────────
+with tab_training:
+    st.markdown("""
+    <div style="margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#f1f5f9;font-family:'Outfit',sans-serif;
+                  margin-bottom:6px;">Training Mode</div>
+      <div style="font-size:13px;color:rgba(148,163,184,0.5);line-height:1.6;">
+        Train RL agents, visualise learning curves, and compare agent performance.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── SECTION A: Learning Progress Chart ──────────────────────────────
+    st.markdown("""<div class="section-heading"><div class="sh-line"></div>
+      <div class="sh-text">Learning Progress</div>
+      <div class="sh-line" style="background:linear-gradient(90deg,transparent,rgba(99,102,241,0.3));"></div>
+    </div>""", unsafe_allow_html=True)
+
+    _training_log_path = Path("data/training_log.json")
+    if _training_log_path.exists():
+        try:
+            with open(_training_log_path, "r") as _f:
+                _train_log = json.load(_f)
+            if _train_log and isinstance(_train_log, list):
+                _episodes_list = [e.get("episode", i) for i, e in enumerate(_train_log)]
+                _rewards_list = [e.get("avg_reward", 0) for e in _train_log]
+                _epsilon_list = [e.get("epsilon") for e in _train_log]
+
+                from plotly.subplots import make_subplots as _make_subplots
+
+                _has_epsilon = any(e is not None for e in _epsilon_list)
+
+                if _has_epsilon:
+                    _fig_lc = _make_subplots(specs=[[{"secondary_y": True}]])
+                else:
+                    _fig_lc = go.Figure()
+
+                # Reward line
+                _fig_lc.add_trace(
+                    go.Scatter(
+                        x=_episodes_list, y=_rewards_list,
+                        mode="lines+markers",
+                        name="avg_reward",
+                        line=dict(color="#6366f1", width=2.5),
+                        marker=dict(size=4, color="#818cf8"),
+                    ),
+                    secondary_y=False if _has_epsilon else None,
+                )
+
+                # Epsilon line (if present)
+                if _has_epsilon:
+                    _eps_clean = [e if e is not None else 0 for e in _epsilon_list]
+                    _fig_lc.add_trace(
+                        go.Scatter(
+                            x=_episodes_list, y=_eps_clean,
+                            mode="lines",
+                            name="epsilon",
+                            line=dict(color="#f59e0b", width=2, dash="dash"),
+                        ),
+                        secondary_y=True,
+                    )
+                    _fig_lc.update_yaxes(
+                        title_text="Epsilon", secondary_y=True,
+                        gridcolor="rgba(255,255,255,0.03)",
+                        range=[0, 1.05],
+                    )
+
+                # Baselines
+                _fig_lc.add_hline(y=0.48, line_dash="dot", line_color="rgba(148,163,184,0.4)",
+                                  annotation_text="random baseline (0.48)",
+                                  annotation_font=dict(size=10, color="#94a3b8"))
+                _fig_lc.add_hline(y=0.65, line_dash="dot", line_color="rgba(52,211,153,0.4)",
+                                  annotation_text="rule agent baseline (0.65)",
+                                  annotation_font=dict(size=10, color="#34d399"))
+
+                _fig_lc.update_layout(
+                    **_base_layout(height=400),
+                    title=dict(text="Agent Learning Curve", font=dict(size=14, color="#94a3b8"), x=0.5),
+                    xaxis=dict(title="Episode", gridcolor=GRID_COLOR),
+                    yaxis=dict(title="Avg Reward", gridcolor=GRID_COLOR, range=[-0.05, 1.05]),
+                    legend=dict(font=dict(color="#94a3b8")),
+                )
+                if not _has_epsilon:
+                    _fig_lc.update_yaxes(gridcolor=GRID_COLOR)
+
+                st.plotly_chart(_fig_lc, use_container_width=True)
+
+                # Metric cards
+                _n_metric = min(10, len(_rewards_list) // 2)
+                if _n_metric > 0:
+                    _first_n = _rewards_list[:_n_metric]
+                    _last_n = _rewards_list[-_n_metric:]
+                    _first_avg = float(np.mean(_first_n))
+                    _last_avg = float(np.mean(_last_n))
+                    _improvement = _last_avg - _first_avg
+
+                    _mc1, _mc2, _mc3 = st.columns(3)
+                    _mc1.markdown(f"""
+                    <div class="metric-glass">
+                      <div class="m-label">First {_n_metric} Avg</div>
+                      <div class="m-value m-sky">{_first_avg:.4f}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    _mc2.markdown(f"""
+                    <div class="metric-glass">
+                      <div class="m-label">Last {_n_metric} Avg</div>
+                      <div class="m-value m-emerald">{_last_avg:.4f}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    _delta_color = "m-emerald" if _improvement > 0 else "m-rose"
+                    _delta_sign = "+" if _improvement >= 0 else ""
+                    _mc3.markdown(f"""
+                    <div class="metric-glass">
+                      <div class="m-label">Improvement</div>
+                      <div class="m-value {_delta_color}">{_delta_sign}{_improvement:.4f}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("Training log is empty.")
+        except Exception as _e:
+            st.error(f"Error reading training log: {_e}")
+    else:
+        st.info("No training data yet. Run: `python training/train.py --agent simple_rl --episodes 100`")
+
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+    # ── SECTION B: Q-Table Heatmap ──────────────────────────────────────
+    st.markdown("""<div class="section-heading"><div class="sh-line"></div>
+      <div class="sh-text">Q-Table Heatmap (simple_rl)</div>
+      <div class="sh-line" style="background:linear-gradient(90deg,transparent,rgba(99,102,241,0.3));"></div>
+    </div>""", unsafe_allow_html=True)
+
+    _qt_path = Path("data/q_table.npy")
+    _qs_path = Path("data/q_table_states.json")
+    if _qt_path.exists() and _qs_path.exists():
+        try:
+            _q_table = np.load(str(_qt_path))
+            with open(_qs_path, "r") as _f:
+                _q_states = json.load(_f)
+
+            _action_names = [
+                "reply/low", "reply/med", "reply/high", "reply/crit",
+                "ignore/low", "ignore/med",
+                "esc/high", "esc/crit",
+                "fwd/low", "fwd/med", "fwd/high",
+            ]
+
+            _state_keys = sorted(_q_states.keys(), key=lambda k: _q_states[k])
+            _state_indices = [_q_states[k] for k in _state_keys]
+
+            # Only show rows that exist in the Q-table
+            _valid_indices = [i for i in _state_indices if i < _q_table.shape[0]]
+            _valid_keys = [k for k, i in zip(_state_keys, _state_indices) if i < _q_table.shape[0]]
+
+            if _valid_indices:
+                _q_subset = _q_table[_valid_indices, :len(_action_names)]
+
+                _fig_hm = go.Figure(data=go.Heatmap(
+                    z=_q_subset,
+                    x=_action_names[:_q_subset.shape[1]],
+                    y=_valid_keys,
+                    colorscale="Blues",
+                    hovertemplate="State: %{y}<br>Action: %{x}<br>Q-value: %{z:.4f}<extra></extra>",
+                ))
+                _fig_hm.update_layout(
+                    **_base_layout(height=max(300, len(_valid_keys) * 25 + 100)),
+                    title=dict(text="Q-Table: Learned Action Values", font=dict(size=14, color="#94a3b8"), x=0.5),
+                    xaxis=dict(tickfont=dict(size=10), tickangle=45),
+                    yaxis=dict(tickfont=dict(size=9)),
+                )
+                st.plotly_chart(_fig_hm, use_container_width=True)
+            else:
+                st.info("Q-table loaded but no valid state entries found.")
+        except Exception as _e:
+            st.error(f"Error loading Q-table: {_e}")
+    else:
+        st.info("Train simple_rl agent first: `python training/train.py --agent simple_rl --episodes 100`")
+
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+    # ── SECTION C: Learned Patterns Table (rl_llm) ──────────────────────
+    st.markdown("""<div class="section-heading"><div class="sh-line"></div>
+      <div class="sh-text">Learned Patterns (rl_llm)</div>
+      <div class="sh-line" style="background:linear-gradient(90deg,transparent,rgba(99,102,241,0.3));"></div>
+    </div>""", unsafe_allow_html=True)
+
+    _db_path = Path("data/agent_memory.db")
+    if _db_path.exists():
+        try:
+            _conn = sqlite3.connect(str(_db_path))
+            _cursor = _conn.cursor()
+
+            _cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='strategy_memory'"
+            )
+            if _cursor.fetchone():
+                _cursor.execute("""
+                    SELECT pattern, best_action, best_priority, avg_reward, times_seen
+                    FROM strategy_memory ORDER BY avg_reward DESC
+                """)
+                _rows = _cursor.fetchall()
+                if _rows:
+                    _df_patterns = pd.DataFrame(
+                        _rows,
+                        columns=["Pattern", "Best Action", "Best Priority", "Avg Reward", "Times Seen"],
+                    )
+
+                    def _color_avg_reward(val):
+                        if isinstance(val, (int, float)):
+                            if val > 0.7:   return "color:#34d399"
+                            elif val > 0.5: return "color:#fbbf24"
+                            else:           return "color:#f87171"
+                        return ""
+
+                    st.dataframe(
+                        _df_patterns.style.map(_color_avg_reward, subset=["Avg Reward"]),
+                        width="stretch",
+                    )
+                else:
+                    st.info("No patterns learned yet.")
+            else:
+                st.info("strategy_memory table not found. Train rl_llm agent first.")
+
+            # Experience count
+            _cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='experiences'"
+            )
+            if _cursor.fetchone():
+                _cursor.execute("SELECT COUNT(*) FROM experiences")
+                _exp_count = _cursor.fetchone()[0]
+                st.markdown(f"""
+                <div class="metric-glass" style="max-width:300px;">
+                  <div class="m-label">Total Experiences</div>
+                  <div class="m-value m-indigo">{_exp_count}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            _conn.close()
+        except Exception as _e:
+            st.error(f"Error reading agent memory: {_e}")
+    else:
+        st.info("Train rl_llm agent first: `python training/train.py --agent rl_llm --episodes 50`")
+
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+    # ── SECTION D: Train Controls ───────────────────────────────────────
+    st.markdown("""<div class="section-heading"><div class="sh-line"></div>
+      <div class="sh-text">Train Controls</div>
+      <div class="sh-line" style="background:linear-gradient(90deg,transparent,rgba(99,102,241,0.3));"></div>
+    </div>""", unsafe_allow_html=True)
+
+    _tc1, _tc2, _tc3 = st.columns(3)
+    _train_agent_type = _tc1.selectbox(
+        "Agent Type", ["simple_rl", "rl_llm"], key="train_agent_type"
+    )
+    _train_difficulty = _tc2.selectbox(
+        "Difficulty", ["all", "easy", "medium", "hard"], key="train_difficulty"
+    )
+    _train_episodes = _tc3.slider(
+        "Episodes", min_value=10, max_value=200, value=50, step=10, key="train_episodes"
+    )
+
+    if st.button("▶ Run Training", type="primary"):
+        with st.spinner("Training in progress..."):
+            try:
+                _cmd = [
+                    sys.executable, "training/train.py",
+                    "--agent", _train_agent_type,
+                    "--episodes", str(_train_episodes),
+                    "--difficulty", _train_difficulty,
+                ]
+                _result = subprocess.run(
+                    _cmd, capture_output=True, text=True, timeout=300,
+                    cwd=str(Path(__file__).resolve().parent),
+                )
+                st.code(_result.stdout + (_result.stderr or ""), language="text")
+                st.rerun()
+            except subprocess.TimeoutExpired:
+                st.error("Training timed out after 5 minutes.")
+            except Exception as _e:
+                st.error(f"Training failed: {_e}")

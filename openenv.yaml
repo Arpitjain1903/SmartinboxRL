@@ -4,7 +4,7 @@ description: "A Gymnasium-compatible OpenEnv environment for evaluating AI agent
 author: "Arpit"
 task_type: email_triage
 real_world_domain: enterprise_productivity
-difficulty_levels: [easy, medium, hard]
+difficulty_levels: [easy, medium, hard, enron]
 action_space:
   type: structured
   fields:
@@ -36,8 +36,16 @@ tasks:
     difficulty: hard
     description: "Heavily noisy email with typos, shorthand, multiple conflicting intents"
 entrypoint: environment/inbox_env.py
+inference_script: inference.py
 baseline_script: baseline_openai.py
 verify_script: verify_openenv.py
+validate_script: validate.py
 docker_image: smartinboxrl
 hf_space: true
+hf_space_url: "https://huggingface.co/spaces/Arpitjain1903/SmartInboxRL"
+runtime_limit_minutes: 20
+required_env_vars:
+  - API_BASE_URL
+  - MODEL_NAME
+  - HF_TOKEN
 tags: [openenv, email-triage, rl-environment, nlp]
