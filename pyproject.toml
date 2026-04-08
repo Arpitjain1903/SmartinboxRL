@@ -19,6 +19,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
+  "openenv-core>=0.2.0",
   "gymnasium>=0.29.0",
   "pydantic>=2.0.0",
   "openai>=1.0.0",
@@ -31,13 +32,16 @@ dependencies = [
   "PyYAML>=6.0",
 ]
 
+[project.scripts]
+server = "server.app:main"
+
 [project.urls]
 Homepage = "https://huggingface.co/spaces/arpit-jain/SmartInboxRL"
-Repository = "https://github.com/Arpitjain1903/SmartinboxRL"
+Repository = "https://github.com/Arpitjain1903/SmartInboxRL"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["environment*", "agents*", "rewards*"]
+include = ["environment*", "agents*", "rewards*", "server*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml", "*.yml"]
