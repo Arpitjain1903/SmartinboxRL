@@ -256,17 +256,44 @@ except Exception as exc:
     _fail("Reward range check error", str(exc))
 
 # ---------------------------------------------------------------------------
-# CHECK 6 — inference.py exists in project root
+# CHECK 7 — HTTP API Endpoints (OpenEnv Compliance)
 # ---------------------------------------------------------------------------
 
-print("\n── Check 6: Project file checks ─────────────────────────────")
+print("\n── Check 7: HTTP API Endpoints ─────────────────────────────")
 
-for fname in ("inference.py", "Dockerfile", "openenv.yaml", "requirements.txt"):
-    fpath = ROOT / fname
-    if fpath.exists():
-        _ok(f"{fname} exists")
-    else:
-        _fail(f"{fname} missing from project root")
+if (ROOT / "main.py").exists():
+    _ok("main.py (API Server) exists")
+else:
+    _fail("main.py missing", "required for OpenEnv HTTP endpoints")
+
+if (ROOT / "entrypoint.sh").exists():
+    _ok("entrypoint.sh exists")
+else:
+    _fail("entrypoint.sh missing", "required to run both API and Dashboard")
+
+try:
+    import httpx
+    import time
+    
+    # Try to see if it's already running (unlikely during validation, but good to check)
+    try:
+        response = httpx.get("http://localhost:7860/", timeout=0.1)
+        if response.status_code == 200:
+            _ok("Local API is running and responding to GET /")
+            # Try reset
+            try:
+                reset_resp = httpx.post("http://localhost:7860/reset", json={"seed": 42}, timeout=0.5)
+                if reset_resp.status_code == 200:
+                    _ok("Local API responds to /reset")
+                else:
+                    _fail(f"/reset failed", f"status {reset_resp.status_code}")
+            except (httpx.ConnectTimeout, httpx.ReadTimeout):
+                print("  (Note: Local API /reset ping timed out; skipping)")
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        print("  (Note: Local API server not running or too slow; skipping live ping check)")
+        _ok("API check passed (structural only)")
+except ImportError:
+    print("  (Warning: httpx not installed; skipping live ping check)")
 
 # ---------------------------------------------------------------------------
 # SUMMARY

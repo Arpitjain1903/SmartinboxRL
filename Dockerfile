@@ -37,13 +37,12 @@ ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Expose port 7860 for Hugging Face Spaces
+# Expose ports (7860 is the primary public port for HF Spaces)
 EXPOSE 7860
+EXPOSE 8501
 
-# Healthcheck for Streamlit
-HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
-    CMD curl --fail http://localhost:7860/_stcore/health || exit 1
+# Add execution permissions and set entrypoint
+RUN chmod +x entrypoint.sh
 
-# Default: run the Streamlit dashboard
-# Override with: docker run ... python inference.py
-CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
+# Start both API and Dashboard
+CMD ["./entrypoint.sh"]

@@ -1,3 +1,19 @@
+---
+title: SmartInboxRL
+emoji: 📧
+colorFrom: indigo
+colorTo: green
+sdk: docker
+app_port: 7860
+tags:
+  - openenv
+  - email-triage
+  - reinforcement-learning
+  - nlp
+  - gymnasium
+short_description: OpenEnv RL environment for email triage.
+---
+
 # SmartInboxRL — OpenEnv Email Triage Environment
 
 SmartInboxRL is a Gymnasium-compatible reinforcement learning environment designed to evaluate AI agents on realistic email triage tasks. Triage is a critical first step in productivity workflows, requiring high precision in intent extraction, priority classification, and drafting appropriate responses under noisy real-world conditions.

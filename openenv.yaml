@@ -40,6 +40,7 @@ inference_script: inference.py
 baseline_script: baseline_openai.py
 verify_script: verify_openenv.py
 validate_script: validate.py
+api_entrypoint: main.py
 docker_image: smartinboxrl
 hf_space: true
 hf_space_url: "https://huggingface.co/spaces/Arpitjain1903/SmartInboxRL"
