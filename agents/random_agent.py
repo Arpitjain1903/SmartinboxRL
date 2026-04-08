@@ -18,16 +18,16 @@ from environment.action_space import (
 
 
 _RANDOM_RESPONSES = [
-    "I'll look into this and get back to you.",
-    "Noted, thanks for sharing.",
-    "Let me check and follow up.",
-    "Can we discuss this later?",
-    "I appreciate the update.",
+    "Subject: Re: Follow up\n\nHi,\n\nI'll look into this and get back to you.\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Update received\n\nHi,\n\nNoted, thanks for sharing this with me.\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Checking on this\n\nHi,\n\nLet me check on this and follow up.\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Discussion needed\n\nHi,\n\nCan we discuss this later today?\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Update\n\nHi,\n\nI appreciate the update.\n\nBest regards,\nAI Assistant",
     "",
-    "OK",
-    "Sure thing!",
-    "Will do.",
-    "Thanks for letting me know.",
+    "Subject: Re: Acknowledged\n\nHi,\n\nOK, understood.\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Confirmed\n\nHi,\n\nSure thing!\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Action Item\n\nHi,\n\nWill do.\n\nBest regards,\nAI Assistant",
+    "Subject: Re: Thank you\n\nHi,\n\nThanks for letting me know.\n\nBest regards,\nAI Assistant",
 ]
 
 

@@ -134,14 +134,14 @@ class RuleAgent(BaseAgent):
         if _count_signals(text_l, _ESCALATION_SIGNALS) >= 2:
             return (
                 "escalate",
-                "Escalating this to the appropriate team for immediate attention.",
+                "Subject: Escalation: Immediate Attention Required\n\nHi team,\n\nEscalating this to the appropriate team for immediate attention.\n\nBest regards,\nAI Assistant",
             )
 
         # Critical priority → escalate
         if priority == "critical":
             return (
                 "escalate",
-                "This looks critical. I'm escalating this now and will follow up shortly.",
+                "Subject: Escalation: Critical Priority\n\nHi team,\n\nThis looks critical. I'm escalating this now and will follow up shortly.\n\nBest regards,\nAI Assistant",
             )
 
         # Newsletter / FYI → forward or ignore
@@ -149,25 +149,25 @@ class RuleAgent(BaseAgent):
         if any(k in text_l for k in keywords_fwd):
             return (
                 "forward",
-                "Forwarding this to the relevant team members.",
+                "Subject: Fwd: FYI / Newsletter\n\nHi team,\n\nForwarding this to the relevant team members.\n\nBest regards,\nAI Assistant",
             )
 
         # Questions or tasks → reply
         if "question" in intents or "task_assignment" in intents:
             return (
                 "reply",
-                "Thanks for reaching out. I'll review this and get back to you with a detailed response shortly.",
+                "Subject: Re: Your Request\n\nHi there,\n\nThanks for reaching out. I'll review this and get back to you with a detailed response shortly.\n\nBest regards,\nAI Assistant",
             )
 
         # Meeting → reply
         if "meeting_request" in intents:
             return (
                 "reply",
-                "Thanks for the invite. I'll confirm my availability and get back to you.",
+                "Subject: Re: Meeting Request\n\nHi there,\n\nThanks for the invite. I'll confirm my availability and get back to you.\n\nBest regards,\nAI Assistant",
             )
 
         # Default → reply
         return (
             "reply",
-            "Thank you for the message. I'll review this and follow up accordingly.",
+            "Subject: Re: Your Message\n\nHi there,\n\nThank you for the message. I'll review this and follow up accordingly.\n\nBest regards,\nAI Assistant",
         )

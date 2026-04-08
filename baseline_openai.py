@@ -35,10 +35,19 @@ def get_random_action() -> Dict[str, Any]:
     }
 
 def run_evaluation(model: str, episodes_per_diff: int, difficulty: str):
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    
-    if not os.environ.get("OPENAI_API_KEY"):
+    api_key = os.environ.get("OPENAI_API_KEY")
+    base_url = os.environ.get("API_BASE_URL")  # e.g. https://api.groq.com/openai/v1
+
+    if not api_key:
         print("WARNING: OPENAI_API_KEY not found in environment. Baseline will fail unless mocked.")
+
+    # Supports OpenAI, Groq, or any OpenAI-compatible endpoint via API_BASE_URL
+    client_kwargs = {"api_key": api_key}
+    if base_url:
+        client_kwargs["base_url"] = base_url
+        print(f"Using custom API base: {base_url}")
+
+    client = OpenAI(**client_kwargs)
 
     all_results = []
     diffs_to_run = ["easy", "medium", "hard"] if difficulty == "all" else [difficulty]
@@ -58,25 +67,38 @@ def run_evaluation(model: str, episodes_per_diff: int, difficulty: str):
                 history_str = json.dumps(obs.history, indent=2)
                 prompt = f"EMAIL CONTENT:\n{obs.email}\n\nCONVERSATION HISTORY:\n{history_str}\n\nProvide triage JSON:"
 
-                try:
-                    completion = client.chat.completions.create(
-                        model=model,
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0,
-                        response_format={"type": "json_object"}
-                    )
-                    raw_content = completion.choices[0].message.content
-                    action_dict = json.loads(raw_content)
-                    
-                    # Validate with Pydantic for schema compliance
-                    validated_action = EmailAction(**action_dict)
-                    action_payload = validated_action.model_dump()
-                except Exception as e:
-                    print(f"  [Step {obs.step}] LLM error/parse failed: {e}. Using random fallback.")
-                    action_payload = get_random_action()
+                action_payload = None
+                max_retries = 3
+                retry_delay = 6  # Seconds to wait on 429
+
+                for attempt in range(max_retries):
+                    try:
+                        completion = client.chat.completions.create(
+                            model=model,
+                            messages=[
+                                {"role": "system", "content": SYSTEM_PROMPT},
+                                {"role": "user", "content": prompt}
+                            ],
+                            temperature=0,
+                            response_format={"type": "json_object"}
+                        )
+                        raw_content = completion.choices[0].message.content
+                        action_dict = json.loads(raw_content)
+                        
+                        # Validate with Pydantic for schema compliance
+                        validated_action = EmailAction(**action_dict)
+                        action_payload = validated_action.model_dump()
+                        break # Success!
+                    except Exception as e:
+                        if "429" in str(e) and attempt < max_retries - 1:
+                            print(f"  [Step {obs.step}] Rate limit hit. Retrying in {retry_delay}s... (Attempt {attempt+1})")
+                            import time
+                            time.sleep(retry_delay)
+                            continue
+                        else:
+                            print(f"  [Step {obs.step}] LLM error/parse failed: {e}. Using random fallback.")
+                            action_payload = get_random_action()
+                            break
 
                 obs, reward, terminated, truncated, step_info = env.step(action_payload)
                 done = terminated or truncated
@@ -119,9 +141,12 @@ def main():
     parser.add_argument("--model", type=str, default="gpt-4o-mini", help="OpenAI model to use")
     
     args = parser.parse_args()
+
+    # Allow MODEL_NAME env var to override default model
+    model = os.environ.get("MODEL_NAME", args.model)
     
     try:
-        run_evaluation(args.model, args.episodes, args.difficulty)
+        run_evaluation(model, args.episodes, args.difficulty)
     except KeyboardInterrupt:
         print("\nEvaluation interrupted by user.")
 

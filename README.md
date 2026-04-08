@@ -89,11 +89,13 @@ To run the LLM baseline on HF Spaces, configure secrets in **Settings → Secret
 | `MODEL_NAME` | Model identifier (default: `gpt-4o-mini`) |
 
 ## 10. Baseline Scores
-| Difficulty | Model | Avg Reward | Intent F1 | Priority Acc |
-| :--- | :--- | :--- | :--- | :--- |
-| Easy | GPT-4o-mini | 0.88 | 0.92 | 0.95 |
-| Medium | GPT-4o-mini | 0.74 | 0.81 | 0.88 |
-| Hard | GPT-4o-mini | 0.52 | 0.58 | 0.65 |
+| Difficulty | Model | Mean Episode Reward | Avg Step Reward |
+| :--- | :--- | :--- | :--- |
+| Easy | Llama-3.1-8b (Groq) | 10.27 | ~0.68 |
+| Medium | Llama-3.1-8b (Groq) | 5.82 | ~0.38 |
+| Hard | Llama-3.1-8b (Groq) | 5.61 | ~0.37 |
+
+*Note: Results based on 3-episode runs with 15 steps per episode. Reward normalized to [0, 1] per step.*
 
 ## 11. Extending the Environment
 - **Add Tasks**: Modify `environment/email_loader.py` to include new datasets or synthesis rules.

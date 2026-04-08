@@ -1,0 +1,233 @@
+[
+  {
+    "episode": 0,
+    "avg_reward": 0.622485,
+    "epsilon": 0.995,
+    "timestamp": "2026-04-07T00:04:37.348202",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 10,
+    "avg_reward": 0.61995,
+    "epsilon": 0.946355,
+    "timestamp": "2026-04-07T00:05:30.820902",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 20,
+    "avg_reward": 0.619857,
+    "epsilon": 0.900087,
+    "timestamp": "2026-04-07T00:06:24.143745",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 30,
+    "avg_reward": 0.633244,
+    "epsilon": 0.856082,
+    "timestamp": "2026-04-07T00:07:18.493796",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 40,
+    "avg_reward": 0.632783,
+    "epsilon": 0.814229,
+    "timestamp": "2026-04-07T00:08:16.603892",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 50,
+    "avg_reward": 0.627851,
+    "epsilon": 0.774421,
+    "timestamp": "2026-04-07T00:09:18.738828",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 60,
+    "avg_reward": 0.62938,
+    "epsilon": 0.73656,
+    "timestamp": "2026-04-07T00:10:18.332183",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 70,
+    "avg_reward": 0.624691,
+    "epsilon": 0.700549,
+    "timestamp": "2026-04-07T00:11:18.144764",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 80,
+    "avg_reward": 0.634935,
+    "epsilon": 0.6663,
+    "timestamp": "2026-04-07T00:12:19.481787",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 90,
+    "avg_reward": 0.632039,
+    "epsilon": 0.633724,
+    "timestamp": "2026-04-07T00:13:22.055206",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 99,
+    "avg_reward": 0.637904,
+    "epsilon": 0.60577,
+    "timestamp": "2026-04-07T00:14:29.082184",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.600659,
+    "epsilon": 0.602741,
+    "timestamp": "2026-04-07T00:35:17.506650",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.63155,
+    "epsilon": 0.602741,
+    "timestamp": "2026-04-07T00:35:17.659792",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.698204,
+    "epsilon": 0.602741,
+    "timestamp": "2026-04-07T00:35:17.892028",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 9,
+    "avg_reward": 0.631869,
+    "epsilon": 0.576154,
+    "timestamp": "2026-04-07T00:35:30.582230",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 9,
+    "avg_reward": 0.696487,
+    "epsilon": 0.576154,
+    "timestamp": "2026-04-07T00:35:31.394512",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 9,
+    "avg_reward": 0.66501,
+    "epsilon": 0.576154,
+    "timestamp": "2026-04-07T00:35:31.540895",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.675678,
+    "epsilon": 0.573273,
+    "timestamp": "2026-04-07T17:15:08.629316",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 10,
+    "avg_reward": 0.684877,
+    "epsilon": 0.545246,
+    "timestamp": "2026-04-07T17:15:59.381898",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 20,
+    "avg_reward": 0.678183,
+    "epsilon": 0.518589,
+    "timestamp": "2026-04-07T17:17:00.156990",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 30,
+    "avg_reward": 0.670833,
+    "epsilon": 0.493235,
+    "timestamp": "2026-04-07T17:18:02.050934",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.664193,
+    "epsilon": 0.490769,
+    "timestamp": "2026-04-07T17:18:56.200929",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.661969,
+    "epsilon": 0.490769,
+    "timestamp": "2026-04-07T17:18:56.302820",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 10,
+    "avg_reward": 0.676385,
+    "epsilon": 0.466775,
+    "timestamp": "2026-04-07T17:20:29.811608",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 10,
+    "avg_reward": 0.68378,
+    "epsilon": 0.466775,
+    "timestamp": "2026-04-07T17:20:33.618227",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 20,
+    "avg_reward": 0.672159,
+    "epsilon": 0.443955,
+    "timestamp": "2026-04-07T17:22:02.439033",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 20,
+    "avg_reward": 0.683611,
+    "epsilon": 0.443955,
+    "timestamp": "2026-04-07T17:22:10.508055",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 0,
+    "avg_reward": 0.668899,
+    "epsilon": 0.441735,
+    "timestamp": "2026-04-07T18:08:03.718175",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 10,
+    "avg_reward": 0.674863,
+    "epsilon": 0.420139,
+    "timestamp": "2026-04-07T18:08:09.868578",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 20,
+    "avg_reward": 0.684408,
+    "epsilon": 0.399598,
+    "timestamp": "2026-04-07T18:08:15.941579",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 30,
+    "avg_reward": 0.646627,
+    "epsilon": 0.380062,
+    "timestamp": "2026-04-07T18:08:21.733053",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 40,
+    "avg_reward": 0.643381,
+    "epsilon": 0.361481,
+    "timestamp": "2026-04-07T18:08:28.306243",
+    "agent_type": "simple_rl"
+  },
+  {
+    "episode": 49,
+    "avg_reward": 0.64982,
+    "epsilon": 0.345536,
+    "timestamp": "2026-04-07T18:08:34.165712",
+    "agent_type": "simple_rl"
+  }
+]

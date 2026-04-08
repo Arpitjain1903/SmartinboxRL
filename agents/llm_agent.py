@@ -36,7 +36,10 @@ with a JSON object containing exactly these keys:
    Valid values: {actions}
 
 4. "response" — your reply text. If the action is "ignore", \
-set this to an empty string.
+set this to an empty string. IMPORTANT: If replying, the response MUST be a \
+professional valid email format including: a Subject line, a Salutation (e.g. \
+"Hi sender,"), the message body, and a formal Closing (e.g. "Best regards, \
+AI Assistant"). Use \\n characters to format the email lines properly within the JSON string.
 
 Return ONLY valid JSON. No explanation, no markdown fences.
 """.format(

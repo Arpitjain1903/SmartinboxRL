@@ -1,0 +1,1685 @@
+[
+  {
+    "difficulty": "easy",
+    "episode": 0,
+    "total_reward": 10.1787,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.7205210745334625,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.0,
+          "action": 1.0,
+          "response": 0.8035,
+          "penalty": 0.0,
+          "total": 0.7205
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.745,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.745
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.6343352043628693,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 0.0,
+          "response": 0.6289,
+          "penalty": 0.0,
+          "total": 0.6343
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.9051259988546372,
+        "breakdown": {
+          "intent": 1.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7675,
+          "penalty": 0.0,
+          "total": 0.9051
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.6328328186273575,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6189,
+          "penalty": -0.2,
+          "total": 0.6328
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.445,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": -0.4,
+          "total": 0.445
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.545,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.545
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.645,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.645
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.7327091777324677,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6181,
+          "penalty": 0.0,
+          "total": 0.7327
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.7063614749908448,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6091,
+          "penalty": -0.2,
+          "total": 0.7064
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.5817931950092315,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5453,
+          "penalty": -0.4,
+          "total": 0.5818
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.6311257329583169,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.4075,
+          "penalty": 0.0,
+          "total": 0.6311
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.7138484606146813,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.4923,
+          "penalty": 0.0,
+          "total": 0.7138
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.895,
+        "breakdown": {
+          "intent": 1.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.895
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.645,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.645
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "easy",
+    "episode": 1,
+    "total_reward": 9.9735,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.7184644663333892,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.5231,
+          "penalty": 0.0,
+          "total": 0.7185
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.7205210745334625,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.0,
+          "action": 1.0,
+          "response": 0.8035,
+          "penalty": 0.0,
+          "total": 0.7205
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.6874719679355621,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5831,
+          "penalty": -0.2,
+          "total": 0.6875
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.543202998638153,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.688,
+          "penalty": -0.4,
+          "total": 0.5432
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.845,
+        "breakdown": {
+          "intent": 0.6667,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.845
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.685,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.685
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.6778514632582664,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.2523,
+          "penalty": 0.0,
+          "total": 0.6779
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.7556619131565094,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7711,
+          "penalty": 0.0,
+          "total": 0.7557
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.545,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": -0.2,
+          "total": 0.545
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.7949999999999999,
+        "breakdown": {
+          "intent": 1.0,
+          "priority": 0.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.795
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.8087720119953156,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6251,
+          "penalty": 0.0,
+          "total": 0.8088
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.645,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.645
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.7680518174171448,
+        "breakdown": {
+          "intent": 1.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.5203,
+          "penalty": -0.2,
+          "total": 0.7681
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.445,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": -0.4,
+          "total": 0.445
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.33350373744964595,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 0.0,
+          "response": 0.6234,
+          "penalty": -0.6,
+          "total": 0.3335
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "easy",
+    "episode": 2,
+    "total_reward": 10.6814,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.7985211670398712,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6568,
+          "penalty": 0.0,
+          "total": 0.7985
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.7500346118211747,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7336,
+          "penalty": 0.0,
+          "total": 0.75
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.545,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": -0.2,
+          "total": 0.545
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.745,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.745
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.745,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.745
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.7205210745334625,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.0,
+          "action": 1.0,
+          "response": 0.8035,
+          "penalty": 0.0,
+          "total": 0.7205
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.8104422628879547,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7363,
+          "penalty": 0.0,
+          "total": 0.8104
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.618454452753067,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.523,
+          "penalty": -0.2,
+          "total": 0.6185
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.895,
+        "breakdown": {
+          "intent": 1.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.895
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.6297206336259842,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 0.0,
+          "response": 0.5981,
+          "penalty": 0.0,
+          "total": 0.6297
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.745,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.3,
+          "penalty": 0.0,
+          "total": 0.745
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.8663660311698914,
+        "breakdown": {
+          "intent": 1.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.5091,
+          "penalty": 0.0,
+          "total": 0.8664
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.7515284860134125,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7435,
+          "penalty": 0.0,
+          "total": 0.7515
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.545,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.3,
+          "penalty": -0.2,
+          "total": 0.545
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.5157969468832015,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.5053,
+          "penalty": -0.4,
+          "total": 0.5158
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "medium",
+    "episode": 0,
+    "total_reward": 4.6019,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.8156833916902542,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.4379,
+          "penalty": 0.0,
+          "total": 0.8157
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.8625147795677185,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6834,
+          "penalty": 0.0,
+          "total": 0.8625
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.6841851443052291,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5612,
+          "penalty": -0.2,
+          "total": 0.6842
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.574729826450348,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.8982,
+          "penalty": -0.4,
+          "total": 0.5747
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.3085532927513122,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 0.0,
+          "response": 0.457,
+          "penalty": -0.6,
+          "total": 0.3086
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.5083073318004608,
+        "breakdown": {
+          "intent": 0.6667,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.722,
+          "penalty": -0.8,
+          "total": 0.5083
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.3870684236288071,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7471,
+          "penalty": -1.0,
+          "total": 0.3871
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.2255902886390685,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.8373,
+          "penalty": -1.2,
+          "total": 0.2256
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.19825307786464685,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.9217,
+          "penalty": -1.4,
+          "total": 0.1983
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.03704844713211053,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5803,
+          "penalty": -1.6,
+          "total": 0.037
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 0.3,
+          "response": 0.6004,
+          "penalty": -1.8,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7857,
+          "penalty": -2.0,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6975,
+          "penalty": -2.2,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.8155,
+          "penalty": -2.4,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.2857,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7324,
+          "penalty": -2.6,
+          "total": 0.0
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "medium",
+    "episode": 1,
+    "total_reward": 8.3029,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.7918000036478043,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.512,
+          "penalty": 0.0,
+          "total": 0.7918
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.7834736168384552,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5565,
+          "penalty": 0.0,
+          "total": 0.7835
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.7150458097457886,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.767,
+          "penalty": -0.2,
+          "total": 0.715
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.5987101376056672,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6581,
+          "penalty": -0.4,
+          "total": 0.5987
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.6,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.0,
+          "penalty": 0.0,
+          "total": 0.6
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.8605402624607086,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6703,
+          "penalty": 0.0,
+          "total": 0.8605
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.8187215447425842,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7915,
+          "penalty": 0.0,
+          "total": 0.8187
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.8045753359794617,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.8638,
+          "penalty": -0.2,
+          "total": 0.8046
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.59506591796875,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 0.3,
+          "response": 0.7004,
+          "penalty": -0.4,
+          "total": 0.5951
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.5966016620397567,
+        "breakdown": {
+          "intent": 0.6667,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.644,
+          "penalty": -0.6,
+          "total": 0.5966
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.39448900222778316,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6299,
+          "penalty": -0.8,
+          "total": 0.3945
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.31475825905799865,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7651,
+          "penalty": -1.0,
+          "total": 0.3148
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.2307000160217284,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.538,
+          "penalty": -1.2,
+          "total": 0.2307
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.1984496265649795,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.823,
+          "penalty": -1.4,
+          "total": 0.1984
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.3996,
+          "penalty": -1.6,
+          "total": 0.0
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "medium",
+    "episode": 2,
+    "total_reward": 4.581,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.8246895298361778,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.4979,
+          "penalty": 0.0,
+          "total": 0.8247
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.784990861415863,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 0.3,
+          "response": 0.6333,
+          "penalty": 0.0,
+          "total": 0.785
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.7476994907855987,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5847,
+          "penalty": -0.2,
+          "total": 0.7477
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.6006888389587401,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6713,
+          "penalty": -0.4,
+          "total": 0.6007
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.5536487638950347,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.691,
+          "penalty": -0.6,
+          "total": 0.5536
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.37801314890384674,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5201,
+          "penalty": -0.8,
+          "total": 0.378
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.3507304304838181,
+        "breakdown": {
+          "intent": 0.6667,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7382,
+          "penalty": -1.0,
+          "total": 0.3507
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.18489270150661458,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6326,
+          "penalty": -1.2,
+          "total": 0.1849
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.14126965403556818,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6085,
+          "penalty": -1.4,
+          "total": 0.1413
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.014411422610282831,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7627,
+          "penalty": -1.6,
+          "total": 0.0144
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6804,
+          "penalty": -1.8,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 1.0,
+          "action": 0.0,
+          "response": 0.5379,
+          "penalty": -2.0,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.829,
+          "penalty": -2.2,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.2995,
+          "penalty": -2.4,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.8203,
+          "penalty": -2.6,
+          "total": 0.0
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "hard",
+    "episode": 0,
+    "total_reward": 4.266,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.798622694015503,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.8075,
+          "penalty": 0.0,
+          "total": 0.7986
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.7156340630849203,
+        "breakdown": {
+          "intent": 0.2222,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.7487,
+          "penalty": 0.0,
+          "total": 0.7156
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.7268310248851776,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5955,
+          "penalty": -0.2,
+          "total": 0.7268
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.570012180407842,
+        "breakdown": {
+          "intent": 0.2222,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6445,
+          "penalty": -0.4,
+          "total": 0.57
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.38931540369987483,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.5454,
+          "penalty": -0.6,
+          "total": 0.3893
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.4689224700133006,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6817,
+          "penalty": -0.8,
+          "total": 0.4689
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.25282854318618775,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.8189,
+          "penalty": -1.0,
+          "total": 0.2528
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.2830785176583698,
+        "breakdown": {
+          "intent": 0.5714,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6491,
+          "penalty": -1.2,
+          "total": 0.2831
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.060762012004852206,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.4051,
+          "penalty": -1.4,
+          "total": 0.0608
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.5967,
+          "penalty": -1.6,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.5285,
+          "penalty": -1.8,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6362,
+          "penalty": -2.0,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.689,
+          "penalty": -2.2,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.835,
+          "penalty": -2.4,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.5714,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5044,
+          "penalty": -2.6,
+          "total": 0.0
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "hard",
+    "episode": 1,
+    "total_reward": 4.3931,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.7345197314023972,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6301,
+          "penalty": 0.0,
+          "total": 0.7345
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.8355754490409579,
+        "breakdown": {
+          "intent": 0.2857,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6181,
+          "penalty": 0.0,
+          "total": 0.8356
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.6262900509153093,
+        "breakdown": {
+          "intent": 0.2857,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.7562,
+          "penalty": -0.2,
+          "total": 0.6263
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.659524416923523,
+        "breakdown": {
+          "intent": 0.5,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5635,
+          "penalty": -0.4,
+          "total": 0.6595
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.44129428704579665,
+        "breakdown": {
+          "intent": 0.2222,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.4531,
+          "penalty": -0.6,
+          "total": 0.4413
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.46647244155406953,
+        "breakdown": {
+          "intent": 0.4,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7098,
+          "penalty": -0.8,
+          "total": 0.4665
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.20878472745418553,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.6752,
+          "penalty": -1.0,
+          "total": 0.2088
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.27569246391455327,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7268,
+          "penalty": -1.2,
+          "total": 0.2757
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.14498476485411327,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5221,
+          "penalty": -1.4,
+          "total": 0.145
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.6988,
+          "penalty": -1.6,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.2222,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.878,
+          "penalty": -1.8,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.3636,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7203,
+          "penalty": -2.0,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.5762,
+          "penalty": -2.2,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.6232,
+          "penalty": -2.4,
+          "total": 0.0
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.0,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.8642,
+          "penalty": -2.6,
+          "total": 0.0
+        }
+      }
+    ]
+  },
+  {
+    "difficulty": "hard",
+    "episode": 2,
+    "total_reward": 8.1921,
+    "steps": [
+      {
+        "step": 1,
+        "reward": 0.8018855680738177,
+        "breakdown": {
+          "intent": 0.2857,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.7935,
+          "penalty": 0.0,
+          "total": 0.8019
+        }
+      },
+      {
+        "step": 2,
+        "reward": 0.7853902861475944,
+        "breakdown": {
+          "intent": 0.3333,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.2359,
+          "penalty": 0.0,
+          "total": 0.7854
+        }
+      },
+      {
+        "step": 3,
+        "reward": 0.525710292160511,
+        "breakdown": {
+          "intent": 0.0,
+          "priority": 0.0,
+          "action": 1.0,
+          "response": 0.1714,
+          "penalty": -0.2,
+          "total": 0.5257
+        }
+      },
+      {
+        "step": 4,
+        "reward": 0.5204092872142791,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.7527,
+          "penalty": -0.4,
+          "total": 0.5204
+        }
+      },
+      {
+        "step": 5,
+        "reward": 0.5246377940688814,
+        "breakdown": {
+          "intent": 0.2857,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5452,
+          "penalty": -0.6,
+          "total": 0.5246
+        }
+      },
+      {
+        "step": 6,
+        "reward": 0.3495698384443918,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.7527,
+          "penalty": -0.8,
+          "total": 0.3496
+        }
+      },
+      {
+        "step": 7,
+        "reward": 0.3566666666666667,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 0.4,
+          "action": 0.0,
+          "response": 0.0,
+          "penalty": -0.5,
+          "total": 0.3567
+        }
+      },
+      {
+        "step": 8,
+        "reward": 0.7071339108262744,
+        "breakdown": {
+          "intent": 0.2857,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.6285,
+          "penalty": 0.0,
+          "total": 0.7071
+        }
+      },
+      {
+        "step": 9,
+        "reward": 0.8757193251089617,
+        "breakdown": {
+          "intent": 0.3636,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.8078,
+          "penalty": 0.0,
+          "total": 0.8757
+        }
+      },
+      {
+        "step": 10,
+        "reward": 0.7978253564664296,
+        "breakdown": {
+          "intent": 0.5714,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.7474,
+          "penalty": -0.2,
+          "total": 0.7978
+        }
+      },
+      {
+        "step": 11,
+        "reward": 0.6818308881350925,
+        "breakdown": {
+          "intent": 0.5714,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.6408,
+          "penalty": -0.4,
+          "total": 0.6818
+        }
+      },
+      {
+        "step": 12,
+        "reward": 0.46317058026790614,
+        "breakdown": {
+          "intent": 0.2,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6211,
+          "penalty": -0.6,
+          "total": 0.4632
+        }
+      },
+      {
+        "step": 13,
+        "reward": 0.27926616340875626,
+        "breakdown": {
+          "intent": 0.25,
+          "priority": 0.4,
+          "action": 0.3,
+          "response": 0.4784,
+          "penalty": -0.8,
+          "total": 0.2793
+        }
+      },
+      {
+        "step": 14,
+        "reward": 0.26782481213410697,
+        "breakdown": {
+          "intent": 0.2222,
+          "priority": 0.4,
+          "action": 1.0,
+          "response": 0.6299,
+          "penalty": -1.0,
+          "total": 0.2678
+        }
+      },
+      {
+        "step": 15,
+        "reward": 0.25504500667254126,
+        "breakdown": {
+          "intent": 0.4444,
+          "priority": 1.0,
+          "action": 1.0,
+          "response": 0.5892,
+          "penalty": -1.2,
+          "total": 0.255
+        }
+      }
+    ]
+  }
+]
