@@ -340,6 +340,19 @@ class TestRewardEngineComposite:
         assert engine.weights["intent"] == pytest.approx(0.5)
         assert engine.weights["response"] == pytest.approx(0.1)
 
+    def test_final_score_never_exactly_zero_or_one(self):
+        """Hackathon hard requirement: score strictly in (0, 1)"""
+        cases = [
+            # (email, action, log)
+            (_email(gold_priority="critical"), _action(action="ignore", response="ok"), ["ignore"]*5),
+            (_email(), _action(), []),
+        ]
+        for email, action, log in cases:
+            score, _ = self.engine.compute(email, action, action_log=log)
+            assert score != 0.0, f"Got exactly 0.0 — SUBMISSION REJECTED"
+            assert score != 1.0, f"Got exactly 1.0 — SUBMISSION REJECTED"
+            assert 0.0 < score < 1.0, f"Score out of range: {score}"
+
 
 # ===========================================================================
 # EmbeddingScorer — heuristic fallback
