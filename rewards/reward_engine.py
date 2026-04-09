@@ -19,13 +19,18 @@ from rewards.penalty_system import PenaltySystem
 # ---------------------------------------------------------------------------
 # Strict-open-interval helper
 # ---------------------------------------------------------------------------
-# OpenEnv requires every task score to be strictly within (0, 1).
-# SCORE_EPS is the minimum distance from the endpoints.
-SCORE_EPS = 1e-6
+# HARD REQUIREMENT: every grader score must be strictly between 0 and 1.
+# The hackathon validator REJECTS exactly 0.0 or 1.0.
+# Valid range: [0.001, 0.999]  (i.e. max(0.001, min(0.999, raw)))
+SCORE_EPS = 0.001
 
 
 def _strict(x: float) -> float:
-    """Clamp *x* into the open interval (SCORE_EPS, 1 - SCORE_EPS)."""
+    """Clip *x* into the half-open interval [SCORE_EPS, 1-SCORE_EPS].
+
+    This ensures the returned score is NEVER exactly 0.0 or 1.0,
+    satisfying the hackathon grader hard requirement.
+    """
     return max(SCORE_EPS, min(1.0 - SCORE_EPS, float(x)))
 
 
@@ -116,7 +121,7 @@ class RewardEngine:
         raw = max(-1.0, min(1.0, weighted + penalty))
         total = (raw + 1.0) / 2.0
 
-        # Enforce strict open interval (0, 1) — OpenEnv requirement
+        # HARD REQUIREMENT: clip to [0.001, 0.999] — 0.0 and 1.0 are rejected
         total = _strict(total)
 
         breakdown = {

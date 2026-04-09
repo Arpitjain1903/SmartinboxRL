@@ -14,12 +14,16 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# OpenEnv requires scores strictly within (0, 1) — never exactly 0.0 or 1.0
-_SCORE_EPS = 1e-6
+# HARD REQUIREMENT: every grader score must be strictly between 0 and 1.
+# Hackathon validator REJECTS exactly 0.0 or 1.0.  Valid range: [0.001, 0.999].
+_SCORE_EPS = 0.001
 
 
 def _strict(x: float) -> float:
-    """Clamp *x* into the open interval (_SCORE_EPS, 1 - _SCORE_EPS)."""
+    """Clip *x* into [_SCORE_EPS, 1 - _SCORE_EPS] = [0.001, 0.999].
+
+    NEVER returns exactly 0.0 or 1.0.
+    """
     return max(_SCORE_EPS, min(1.0 - _SCORE_EPS, float(x)))
 
 # ---------------------------------------------------------------------------
