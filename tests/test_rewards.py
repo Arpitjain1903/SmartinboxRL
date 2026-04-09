@@ -151,11 +151,11 @@ class TestRewardEngineIntentScoring:
 
     def test_perfect_intent_match(self):
         score = self.engine._score_intents(["spam"], ["spam"])
-        assert score == pytest.approx(1.0)
+        assert score > 0.99  # strictly < 1 but effectively perfect
 
     def test_zero_intent_match(self):
         score = self.engine._score_intents(["spam"], ["meeting_request"])
-        assert score == pytest.approx(0.0)
+        assert score < 0.01  # strictly > 0 but effectively zero
 
     def test_partial_intent_f1(self):
         # predicted: spam, meeting_request  |  gold: spam
@@ -169,11 +169,11 @@ class TestRewardEngineIntentScoring:
 
     def test_empty_predicted_returns_zero(self):
         score = self.engine._score_intents([], ["spam"])
-        assert score == pytest.approx(0.0)
+        assert score < 0.01  # strictly > 0 but effectively zero
 
     def test_empty_gold_and_empty_pred_returns_one(self):
         score = self.engine._score_intents([], [])
-        assert score == pytest.approx(1.0)
+        assert score > 0.99  # strictly < 1 but effectively perfect
 
 
 class TestRewardEnginePriorityScoring:
@@ -181,18 +181,18 @@ class TestRewardEnginePriorityScoring:
         self.engine = RewardEngine()
 
     def test_exact_match_priority(self):
-        assert self.engine._score_priority("medium", "medium") == pytest.approx(1.0)
+        assert self.engine._score_priority("medium", "medium") > 0.99
 
     def test_one_step_off_priority(self):
         assert self.engine._score_priority("high", "medium") == pytest.approx(0.4)
         assert self.engine._score_priority("low", "medium") == pytest.approx(0.4)
 
     def test_two_step_off_priority(self):
-        assert self.engine._score_priority("critical", "low") == pytest.approx(0.0)
-        assert self.engine._score_priority("low", "high") == pytest.approx(0.0)
+        assert self.engine._score_priority("critical", "low") < 0.01
+        assert self.engine._score_priority("low", "high") < 0.01
 
     def test_invalid_priority_returns_zero(self):
-        assert self.engine._score_priority("extreme", "high") == pytest.approx(0.0)
+        assert self.engine._score_priority("extreme", "high") < 0.01
 
 
 class TestRewardEngineActionScoring:
@@ -200,10 +200,10 @@ class TestRewardEngineActionScoring:
         self.engine = RewardEngine()
 
     def test_exact_action_match(self):
-        assert self.engine._score_action("reply", "reply") == pytest.approx(1.0)
-        assert self.engine._score_action("ignore", "ignore") == pytest.approx(1.0)
-        assert self.engine._score_action("escalate", "escalate") == pytest.approx(1.0)
-        assert self.engine._score_action("forward", "forward") == pytest.approx(1.0)
+        assert self.engine._score_action("reply", "reply") > 0.99
+        assert self.engine._score_action("ignore", "ignore") > 0.99
+        assert self.engine._score_action("escalate", "escalate") > 0.99
+        assert self.engine._score_action("forward", "forward") > 0.99
 
     def test_partial_credit_related_actions(self):
         assert self.engine._score_action("escalate", "forward") == pytest.approx(0.3)
@@ -212,8 +212,8 @@ class TestRewardEngineActionScoring:
         assert self.engine._score_action("escalate", "reply") == pytest.approx(0.3)
 
     def test_zero_for_unrelated_actions(self):
-        assert self.engine._score_action("ignore", "reply") == pytest.approx(0.0)
-        assert self.engine._score_action("reply", "ignore") == pytest.approx(0.0)
+        assert self.engine._score_action("ignore", "reply") < 0.01
+        assert self.engine._score_action("reply", "ignore") < 0.01
 
 
 class TestRewardEngineResponseScoring:
@@ -225,15 +225,15 @@ class TestRewardEngineResponseScoring:
 
     def test_empty_gold_and_pred_scores_one(self):
         score = self.engine._score_response("", "", "ignore")
-        assert score == pytest.approx(1.0)
+        assert score > 0.99  # strictly < 1 but effectively perfect
 
     def test_empty_pred_when_gold_expects_response_scores_zero(self):
         score = self.engine._score_response("", "Thank you for reaching out.", "reply")
-        assert score == pytest.approx(0.0)
+        assert score < 0.01  # strictly > 0 but effectively zero
 
     def test_ignore_action_when_gold_response_expected_scores_zero(self):
         score = self.engine._score_response("some reply", "Thank you.", "ignore")
-        assert score == pytest.approx(0.0)
+        assert score < 0.01  # strictly > 0 but effectively zero
 
     def test_noisy_response_when_none_expected_scores_low(self):
         # gold is empty, but agent generates text → penalised
@@ -273,9 +273,9 @@ class TestRewardEngineComposite:
         reward, breakdown = self.engine.compute(email, action)
         # Intent, priority, action all perfect → high reward (response via heuristic)
         assert reward > 0.6
-        assert breakdown["intent"] == pytest.approx(1.0)
-        assert breakdown["priority"] == pytest.approx(1.0)
-        assert breakdown["action"] == pytest.approx(1.0)
+        assert breakdown["intent"] > 0.99
+        assert breakdown["priority"] > 0.99
+        assert breakdown["action"] > 0.99
         assert breakdown["penalty"] == pytest.approx(0.0)
 
     def test_completely_wrong_action_returns_low_reward(self):
@@ -293,9 +293,9 @@ class TestRewardEngineComposite:
         )
         reward, breakdown = self.engine.compute(email, action, action_log=[])
         assert reward <= 0.3
-        assert breakdown["intent"] == pytest.approx(0.0)
-        assert breakdown["priority"] == pytest.approx(0.0)
-        assert breakdown["action"] == pytest.approx(0.0)
+        assert breakdown["intent"] < 0.01
+        assert breakdown["priority"] < 0.01
+        assert breakdown["action"] < 0.01
 
     def test_reward_clamped_to_minus_one_on_bad_action(self):
         email = _email(gold_priority="critical", gold_action="reply")
@@ -359,10 +359,10 @@ class TestEmbeddingScorerHeuristic:
         assert score < 0.3
 
     def test_empty_candidate_returns_zero(self):
-        assert self.scorer.score("", "some reference") == pytest.approx(0.0)
+        assert self.scorer.score("", "some reference") < 0.01
 
     def test_empty_reference_returns_zero(self):
-        assert self.scorer.score("some candidate", "") == pytest.approx(0.0)
+        assert self.scorer.score("some candidate", "") < 0.01
 
     def test_score_bounded_zero_to_one(self):
         score = self.scorer.score("hello world", "hello there world")

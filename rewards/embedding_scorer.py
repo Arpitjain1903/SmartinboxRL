@@ -14,6 +14,14 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+# OpenEnv requires scores strictly within (0, 1) — never exactly 0.0 or 1.0
+_SCORE_EPS = 1e-6
+
+
+def _strict(x: float) -> float:
+    """Clamp *x* into the open interval (_SCORE_EPS, 1 - _SCORE_EPS)."""
+    return max(_SCORE_EPS, min(1.0 - _SCORE_EPS, float(x)))
+
 # ---------------------------------------------------------------------------
 # Lazy model loader (avoids slow import on module load)
 # ---------------------------------------------------------------------------
@@ -93,7 +101,7 @@ class EmbeddingScorer:
             references = [references]
 
         if not candidate or not any(references):
-            return 0.0
+            return _strict(0.0)
 
         if self.available:
             return self._embedding_score(candidate, references)
@@ -116,8 +124,8 @@ class EmbeddingScorer:
         similarities = [float(np.dot(cand_emb, ref)) for ref in ref_embs]
         best = max(similarities)
 
-        # clamp to [0, 1]
-        return max(0.0, min(1.0, best))
+        # clamp to strict open interval (0, 1)
+        return _strict(best)
 
     # ---- fallback heuristic ----
 
@@ -126,7 +134,7 @@ class EmbeddingScorer:
         """Simple token-overlap heuristic (Jaccard-ish)."""
         cand_tokens = set(candidate.lower().split())
         if not cand_tokens:
-            return 0.0
+            return _strict(0.0)
 
         best = 0.0
         for ref in references:
@@ -137,5 +145,5 @@ class EmbeddingScorer:
             union = len(cand_tokens | ref_tokens)
             best = max(best, overlap / union if union else 0.0)
 
-        # scale to roughly match embedding range
-        return min(1.0, best * 1.3)
+        # scale to roughly match embedding range, then enforce strict (0, 1)
+        return _strict(min(1.0, best * 1.3))
