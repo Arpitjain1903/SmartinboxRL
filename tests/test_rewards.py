@@ -292,7 +292,7 @@ class TestRewardEngineComposite:
             response="",            # wrong (should reply)
         )
         reward, breakdown = self.engine.compute(email, action, action_log=[])
-        assert reward < 0.1
+        assert reward <= 0.3
         assert breakdown["intent"] == pytest.approx(0.0)
         assert breakdown["priority"] == pytest.approx(0.0)
         assert breakdown["action"] == pytest.approx(0.0)

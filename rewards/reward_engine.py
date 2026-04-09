@@ -103,6 +103,9 @@ class RewardEngine:
         # Clamp raw score to [-1, 1] then normalize to [0, 1] for OpenEnv spec
         raw = max(-1.0, min(1.0, weighted + penalty))
         total = (raw + 1.0) / 2.0
+        
+        # Ensure score falls strictly within (0, 1)
+        total = max(1e-4, min(1.0 - 1e-4, total))
 
         breakdown = {
             "intent": round(intent_score, 4),
