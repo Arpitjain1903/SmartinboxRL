@@ -38,6 +38,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+# ---------------------------------------------------------------------------
+# Score boundary guard — HARD hackathon requirement
+# ---------------------------------------------------------------------------
+
+def _safe_score(x: float) -> float:
+    """
+    HACKATHON HARD REQUIREMENT:
+    Validator REJECTS scores of exactly 0.0 or 1.0.
+    Clips every task score to strictly open interval (0.001, 0.999).
+    Wrap EVERY return statement that produces a task score.
+    """
+    return max(0.001, min(0.999, float(x)))
+
 # ---------------------------------------------------------------------------
 # Environment configuration (mandatory per competition spec)
 # ---------------------------------------------------------------------------
@@ -282,8 +296,9 @@ def run_task(task_def: dict[str, Any]) -> dict[str, Any]:
             obs, reward, terminated, truncated, info = env.step(action)
             step_count  += 1
             reward       = float(reward)
-            # Normalize to [0.0, 1.0] — step reward is already per-step normalized
-            step_score   = max(0.0, min(1.0, reward))
+            # Normalize to (0.001, 0.999) — step reward already per-step normalized.
+            # _safe_score ensures we never return exactly 0.0 or 1.0.
+            step_score   = _safe_score(reward)
             total_score += step_score
 
             breakdown = info.get("reward_breakdown", {})
@@ -302,9 +317,9 @@ def run_task(task_def: dict[str, Any]) -> dict[str, Any]:
             if terminated or truncated:
                 break
 
-        # Final score: mean step score, normalized to [0.0, 1.0]
-        final_score = round(total_score / max(step_count, 1), 4)
-        final_score = max(0.0, min(1.0, final_score))
+        # Final task score: mean step score clamped to strict open interval.
+        # round() alone can snap to 0.0 or 1.0 — _safe_score prevents that.
+        final_score = _safe_score(total_score / max(step_count, 1))
 
         log_end(task=name, score=final_score, steps=step_count, status="success")
 
@@ -312,8 +327,10 @@ def run_task(task_def: dict[str, Any]) -> dict[str, Any]:
 
     except Exception as exc:
         error_msg = str(exc)
-        log_end(task=name, score=0.0, steps=0, status="error", error=error_msg)
-        return {"task": name, "score": 0.0, "steps": 0, "status": "error", "error": error_msg}
+        # score=0.0 is REJECTED by validator — use minimum safe score instead
+        error_score = _safe_score(0.0)  # → 0.001
+        log_end(task=name, score=error_score, steps=0, status="error", error=error_msg)
+        return {"task": name, "score": error_score, "steps": 0, "status": "error", "error": error_msg}
 
 
 # ---------------------------------------------------------------------------
