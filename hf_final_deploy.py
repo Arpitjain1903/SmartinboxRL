@@ -1,8 +1,12 @@
+
 """Targeted upload to HF Spaces including new API files."""
 
 import os
 from huggingface_hub import HfApi
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv() # Load variables from .env
 
 # Load token from environment to avoid committing secrets
 TOKEN = os.environ.get("HF_TOKEN")
