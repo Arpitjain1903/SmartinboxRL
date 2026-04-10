@@ -357,6 +357,7 @@ def main() -> None:
 
     # Final summary — use _safe_score to ensure the mean is also in (0, 1)
     # Defaulting to _safe_score(0.0) covers the empty list case.
+    scores = [r["score"] for r in all_results]
     mean_score = _safe_score(sum(scores) / len(scores)) if scores else _safe_score(0.0)
 
     print("=" * 60, flush=True)
