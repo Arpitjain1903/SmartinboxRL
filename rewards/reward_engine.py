@@ -125,11 +125,11 @@ class RewardEngine:
         total = _strict(total)
 
         breakdown = {
-            "intent": round(intent_score, 4),
-            "priority": round(priority_score, 4),
-            "action": round(action_score, 4),
-            "response": round(response_score, 4),
-            "penalty": round(penalty, 4),
+            "intent": round(_strict(intent_score), 4),
+            "priority": round(_strict(priority_score), 4),
+            "action": round(_strict(action_score), 4),
+            "response": round(_strict(response_score), 4),
+            "penalty": round(penalty, 4), # Penalty remains raw for info, but total is strict
             "total": round(total, 4),
         }
 

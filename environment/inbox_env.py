@@ -301,7 +301,7 @@ class InboxEnv(gym.Env):
     def _get_reward_engine(self):
         """Lazy-load the reward engine."""
         if self._reward_engine is None:
-            from rewards.reward_engine import RewardEngine
+            from rewards.reward_engine import RewardEngine, _strict
 
             self._reward_engine = RewardEngine()
         return self._reward_engine
@@ -323,20 +323,23 @@ class InboxEnv(gym.Env):
         if self._state is None:
             return {}
         steps = max(self._state.current_step, 1)  # avoid div-by-zero
-        mean_step = round(self._state.total_reward / steps, 4)
-        # Normalize each component breakdown by steps as well
+        # Strictly clip the mean step reward to prevent exactly 0.0 or 1.0
+        # which can occur if steps is large and reward is small, or sum is exact.
+        mean_step = _strict(self._state.total_reward / steps)
+        
+        # Also ensure normalized components are strictly safe
         norm_breakdown = {
-            k: round(v / steps, 4)
-            for k, v in self._state.reward_breakdown.items()
+            k: _strict(v / steps) for k, v in self._state.reward_breakdown.items()
         }
+
         return {
             "total_reward": round(self._state.total_reward, 4),
-            "mean_step_reward": mean_step,
+            "mean_step_reward": round(mean_step, 4),
             "steps": self._state.current_step,
             "reward_breakdown": {
                 k: round(v, 4) for k, v in self._state.reward_breakdown.items()
             },
-            "norm_reward_breakdown": norm_breakdown,
+            "norm_reward_breakdown": {k: round(v, 4) for k, v in norm_breakdown.items()},
             "history": [
                 {
                     "email_id": h.email_id,

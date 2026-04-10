@@ -355,9 +355,9 @@ def main() -> None:
 
     elapsed = round(time.time() - t_start, 2)
 
-    # Final summary
-    scores = [r["score"] for r in all_results]
-    mean_score = round(sum(scores) / len(scores), 4) if scores else 0.0
+    # Final summary — use _safe_score to ensure the mean is also in (0, 1)
+    # Defaulting to _safe_score(0.0) covers the empty list case.
+    mean_score = _safe_score(sum(scores) / len(scores)) if scores else _safe_score(0.0)
 
     print("=" * 60, flush=True)
     print("  FINAL RESULTS", flush=True)
