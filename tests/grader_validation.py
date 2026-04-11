@@ -18,8 +18,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from rewards.reward_engine import RewardEngine, _strict as _re_strict
-from rewards.embedding_scorer import EmbeddingScorer, _strict as _es_strict
+from rewards.reward_engine import RewardEngine, safe_score, _strict as _re_strict
+from rewards.embedding_scorer import EmbeddingScorer, safe_score as _es_safe_score, _strict as _es_strict
 from rewards.penalty_system import PenaltySystem
 
 
@@ -70,7 +70,7 @@ def grade_intents(predicted_intents: list[str], gold_intents: list[str]) -> floa
     """
     engine = RewardEngine()
     raw = engine._score_intents(predicted_intents, gold_intents)
-    return max(0.001, min(0.999, raw))   # explicit clip at grader boundary
+    return safe_score(raw)   # explicit clip with None/NaN safety
 
 
 # ===========================================================================
@@ -85,7 +85,7 @@ def grade_priority(predicted_priority: str, gold_priority: str) -> float:
     """
     engine = RewardEngine()
     raw = engine._score_priority(predicted_priority, gold_priority)
-    return max(0.001, min(0.999, raw))
+    return safe_score(raw)
 
 
 # ===========================================================================
@@ -100,7 +100,7 @@ def grade_action(predicted_action: str, gold_action: str) -> float:
     """
     engine = RewardEngine()
     raw = engine._score_action(predicted_action, gold_action)
-    return max(0.001, min(0.999, raw))
+    return safe_score(raw)
 
 
 # ===========================================================================
@@ -115,7 +115,7 @@ def grade_response(predicted: str, gold: str, action_type: str) -> float:
     """
     engine = RewardEngine()
     raw = engine._score_response(predicted, gold, action_type)
-    return max(0.001, min(0.999, raw))
+    return safe_score(raw)
 
 
 # ===========================================================================
@@ -151,8 +151,8 @@ def _run_grader(name: str, cases: list) -> bool:
         try:
             score = func(*args)
             
-            # Boundary check: Strictly in (0, 1) AND in [0.001, 0.999]
-            if score < 0.001 or score > 0.999:
+            # Boundary check: Strictly in (0, 1) AND in [0.01, 0.99]
+            if score < 0.01 or score > 0.99:
                 status = "FAIL"
                 all_ok = False
             else:

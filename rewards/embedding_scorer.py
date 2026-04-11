@@ -15,16 +15,30 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 # HARD REQUIREMENT: every grader score must be strictly between 0 and 1.
-# Hackathon validator REJECTS exactly 0.0 or 1.0.  Valid range: [0.001, 0.999].
-_SCORE_EPS = 0.001
+# Hackathon validator REJECTS exactly 0.0 or 1.0.  Valid range: (0.01, 0.99).
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
 
 
-def _strict(x: float) -> float:
-    """Clip *x* into [_SCORE_EPS, 1 - _SCORE_EPS] = [0.001, 0.999].
+def safe_score(value) -> float:
+    """Clamp *value* into the open interval (0.01, 0.99).
 
-    NEVER returns exactly 0.0 or 1.0.
+    Handles None, NaN, bool, and any numeric type.
+    NEVER returns exactly 0.0 or 1.0 — satisfies the hackathon hard requirement.
     """
-    return max(_SCORE_EPS, min(1.0 - _SCORE_EPS, float(x)))
+    if value is None:
+        return 0.5
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return 0.5
+    if v != v:  # NaN check
+        return 0.5
+    return max(_SCORE_MIN, min(_SCORE_MAX, v))
+
+
+# Keep _strict as an alias so existing imports don't break
+_strict = safe_score
 
 # ---------------------------------------------------------------------------
 # Lazy model loader (avoids slow import on module load)
@@ -105,7 +119,7 @@ class EmbeddingScorer:
             references = [references]
 
         if not candidate or not any(references):
-            return _strict(0.0)
+            return safe_score(0.0)
 
         if self.available:
             return self._embedding_score(candidate, references)
@@ -129,7 +143,7 @@ class EmbeddingScorer:
         best = max(similarities)
 
         # clamp to strict open interval (0, 1)
-        return _strict(best)
+        return safe_score(best)
 
     # ---- fallback heuristic ----
 
@@ -150,4 +164,4 @@ class EmbeddingScorer:
             best = max(best, overlap / union if union else 0.0)
 
         # scale to roughly match embedding range, then enforce strict (0, 1)
-        return _strict(min(1.0, best * 1.3))
+        return safe_score(min(1.0, best * 1.3))

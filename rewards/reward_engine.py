@@ -21,17 +21,30 @@ from rewards.penalty_system import PenaltySystem
 # ---------------------------------------------------------------------------
 # HARD REQUIREMENT: every grader score must be strictly between 0 and 1.
 # The hackathon validator REJECTS exactly 0.0 or 1.0.
-# Valid range: [0.001, 0.999]  (i.e. max(0.001, min(0.999, raw)))
-SCORE_EPS = 0.001
+# Valid range: (0.01, 0.99)  — safe margin above the hard floor/ceiling.
+SCORE_MIN = 0.01
+SCORE_MAX = 0.99
 
 
-def _strict(x: float) -> float:
-    """Clip *x* into the half-open interval [SCORE_EPS, 1-SCORE_EPS].
+def safe_score(value) -> float:
+    """Clamp *value* into the open interval (0.01, 0.99).
 
-    This ensures the returned score is NEVER exactly 0.0 or 1.0,
-    satisfying the hackathon grader hard requirement.
+    Handles None, NaN, bool, and any numeric type.
+    NEVER returns exactly 0.0 or 1.0 — satisfies the hackathon hard requirement.
     """
-    return max(SCORE_EPS, min(1.0 - SCORE_EPS, float(x)))
+    if value is None:
+        return 0.5
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return 0.5
+    if v != v:  # NaN check
+        return 0.5
+    return max(SCORE_MIN, min(SCORE_MAX, v))
+
+
+# Keep _strict as an alias so existing imports don't break
+_strict = safe_score
 
 
 class RewardEngine:
@@ -145,43 +158,43 @@ class RewardEngine:
     ) -> float:
         """F1 score between predicted and gold intent labels — result in (0, 1)."""
         if not gold:
-            return _strict(1.0) if not predicted else 0.5  # no gold = accept anything
+            return safe_score(1.0) if not predicted else safe_score(0.5)  # no gold = accept anything
 
         pred_set = set(predicted)
         gold_set = set(gold)
 
         if not pred_set:
-            return _strict(0.0)
+            return safe_score(0.0)
 
         tp = len(pred_set & gold_set)
         precision = tp / len(pred_set) if pred_set else 0.0
         recall = tp / len(gold_set) if gold_set else 0.0
 
         if precision + recall == 0:
-            return _strict(0.0)
+            return safe_score(0.0)
 
         f1 = 2 * precision * recall / (precision + recall)
-        return _strict(f1)
+        return safe_score(f1)
 
     @staticmethod
     def _score_priority(predicted: str, gold: str) -> float:
         """Exact match → ~1.0, one-step off → 0.4, else → ~0.0 (strict open interval)."""
         levels = ("low", "medium", "high", "critical")
         if predicted == gold:
-            return _strict(1.0)
+            return safe_score(1.0)
         try:
             diff = abs(levels.index(predicted) - levels.index(gold))
         except ValueError:
-            return _strict(0.0)
+            return safe_score(0.0)
         if diff == 1:
-            return 0.4
-        return _strict(0.0)
+            return safe_score(0.4)
+        return safe_score(0.0)
 
     @staticmethod
     def _score_action(predicted: str, gold: str) -> float:
         """Exact match → ~1.0, partial credit for related actions → 0.3, else → ~0.0."""
         if predicted == gold:
-            return _strict(1.0)
+            return safe_score(1.0)
 
         # partial credit: escalate ↔ forward are related
         related = {
@@ -191,9 +204,9 @@ class RewardEngine:
             ("escalate", "reply"),
         }
         if (predicted, gold) in related:
-            return 0.3
+            return safe_score(0.3)
 
-        return _strict(0.0)
+        return safe_score(0.0)
 
     def _score_response(
         self,
@@ -209,15 +222,15 @@ class RewardEngine:
         # If no response expected, reward silence
         if not gold or gold.strip() == "":
             if not predicted or predicted.strip() == "":
-                return _strict(1.0)
+                return safe_score(1.0)
             # Penalty for generating noise when none was needed
-            return 0.3
+            return safe_score(0.3)
 
         # If agent chose to ignore but a response was expected
         if action_type == "ignore" and gold.strip():
-            return _strict(0.0)
+            return safe_score(0.0)
 
         if not predicted or predicted.strip() == "":
-            return _strict(0.0)
+            return safe_score(0.0)
 
-        return _strict(self._scorer.score(predicted, gold))
+        return safe_score(self._scorer.score(predicted, gold))
