@@ -43,14 +43,16 @@ load_dotenv()
 # Score boundary guard — HARD hackathon requirement
 # ---------------------------------------------------------------------------
 
-def _safe_score(x: float) -> float:
+def _safe_score(x) -> float:
     """
     HACKATHON HARD REQUIREMENT:
     Validator REJECTS scores of exactly 0.0 or 1.0.
-    Clips every task score to strictly open interval (0.001, 0.999).
-    Wrap EVERY return statement that produces a task score.
+    Clips every task score to the strictly-open interval (0.01, 0.99).
+    Handles None and NaN. Wrap EVERY return that produces a task score.
     """
-    return max(0.001, min(0.999, float(x)))
+    if x is None or x != x:  # handles None and NaN
+        return 0.5
+    return max(0.01, min(0.99, float(x)))
 
 # ---------------------------------------------------------------------------
 # Environment configuration (mandatory per competition spec)
