@@ -1,77 +1,105 @@
 import pytest
+import numpy as np
 from rewards.reward_engine import RewardEngine
 from rewards.embedding_scorer import EmbeddingScorer
-from rewards.penalty_system import PenaltySystem
 
-def test_score_bounds():
-    # Initialize components
-    scorer = EmbeddingScorer()
-    penalty = PenaltySystem()
-    engine = RewardEngine(embedding_scorer=scorer, penalty_system=penalty)
-    
-    # 1. Edge-case inputs: Empty/Null logic
-    empty_email = {}
-    empty_action = {"intents": [], "priority": "medium", "action": "reply", "response": ""}
-    
-    # 2. Perfect inputs
-    perfect_email = {
-        "gold_intents": ["spam"],
-        "gold_priority": "high",
-        "gold_action": "escalate",
-        "gold_response": "This is perfect."
-    }
-    perfect_action = {
-        "intents": ["spam"],
-        "priority": "high",
-        "action": "escalate",
-        "response": "This is perfect."
-    }
-    
-    # 3. All-wrong inputs
-    wrong_email = {
-        "gold_intents": ["meeting_request"],
-        "gold_priority": "low",
-        "gold_action": "ignore",
-        "gold_response": ""
-    }
-    wrong_action = {
-        "intents": ["spam"],
-        "priority": "critical",
-        "action": "reply",
-        "response": "Some weird response."
-    }
-    
-    cases = [
-        ("Empty", empty_email, empty_action),
-        ("Perfect", perfect_email, perfect_action),
-        ("All-wrong", wrong_email, wrong_action),
-        ("None-Edge", {"gold_intents": None}, {"intents": None, "priority": None, "action": None, "response": None}),
+def check_bound(score, grader_class, method_name, inputs):
+    assert 0.0 < score < 1.0, f"SCORE OUT OF BOUNDS: {score} from {grader_class}.{method_name} with inputs {inputs}"
+
+def test_engine_compute_bounds():
+    engine = RewardEngine()
+    grader_class = "RewardEngine"
+    method_name = "compute"
+
+    # Edge-case inputs
+    emails = [
+        {"id": "1", "gold_intents": [], "gold_priority": "medium", "gold_action": "reply", "gold_response": ""},
+        {},
+        {"gold_intents": ["spam"], "gold_priority": "critical", "gold_action": "escalate", "gold_response": "x" * 1000},
+        None,
     ]
-    
-    for case_name, em, ac in cases:
-        score, breakdown = engine.compute(em, ac, action_log=[])
-        
-        # Assert overall score is bounded strictly between 0 and 1
-        assert 0.0 < score < 1.0, f"SCORE OUT OF BOUNDS: {score} from RewardEngine in case {case_name}"
-        
-        # Component scores must also be bounded between 0 and 1
-        # Penalty is an addend, but intent/priority/action/response must be in (0,1)
-        for comp in ["intent", "priority", "action", "response"]:
-            if comp in breakdown:
-                comp_score = breakdown[comp]
-                assert 0.0 < comp_score < 1.0, f"{comp.upper()} SCORE OUT OF BOUNDS: {comp_score} in case {case_name}"
+    actions = [
+        {"intents": [], "priority": "medium", "action": "reply", "response": ""},
+        {"intents": [], "priority": "low", "action": "ignore", "response": ""},
+        {"intents": ["spam"], "priority": "low", "action": "ignore", "response": "y" * 1000},
+        None,
+    ]
+
+    for email in emails:
+        for action in actions:
+            # Bypass None directly since the environment creates dicts
+            e = email if email is not None else {}
+            a = action if action is not None else {"intents": [], "priority": "low", "action": "ignore", "response": ""}
+            score, _ = engine.compute(e, a, [])
+            check_bound(score, grader_class, method_name, f"email={e}, action={a}")
+
+def test_engine_intent_bounds():
+    engine = RewardEngine()
+    edge_cases = [
+        ([], []),
+        (["spam"], ["spam"]),
+        (["spam"], ["info"]),
+        ([], ["spam"]),
+        (["spam"], []),
+        (None, None),
+    ]
+    for p, g in edge_cases:
+        p_safe = p if p is not None else []
+        g_safe = g if g is not None else []
+        score = engine._score_intents(p_safe, g_safe)
+        check_bound(score, "RewardEngine", "_score_intents", f"p={p}, g={g}")
+
+def test_engine_priority_bounds():
+    engine = RewardEngine()
+    edge_cases = [
+        ("low", "low"),
+        ("low", "critical"),
+        ("critical", "low"),
+        ("", ""),
+        ("unknown", "low"),
+        (None, None),
+    ]
+    for p, g in edge_cases:
+        score = engine._score_priority(str(p), str(g))
+        check_bound(score, "RewardEngine", "_score_priority", f"p={p}, g={g}")
+
+def test_engine_action_bounds():
+    engine = RewardEngine()
+    edge_cases = [
+        ("reply", "reply"),
+        ("reply", "ignore"),
+        ("escalate", "forward"), # related
+        ("", ""),
+        ("unknown", "reply"),
+        (None, None),
+    ]
+    for p, g in edge_cases:
+        score = engine._score_action(str(p), str(g))
+        check_bound(score, "RewardEngine", "_score_action", f"p={p}, g={g}")
 
 def test_embedding_scorer_bounds():
     scorer = EmbeddingScorer()
-    # Test identical, completely wrong, and missing strings
-    test_cases = [
-        ("Identical", "hello world", "hello world"),
-        ("Completely wrong", "pizza", "car"),
-        ("Empty candidate", "", "hello"),
-        ("Empty reference", "hello", ""),
-        ("Both Empty", "", ""),
+    edge_cases = [
+        ("", [""]),
+        ("exact match", ["exact match"]),
+        ("completely different", ["totally unrelated string text here"]),
+        ("a", ["b", "c", "d"]),
+        ("", []),
     ]
-    
-    for name, cand, ref in test_cases:
-        score = scorer.score(cand, ref)
-        assert 0.0 < score < 1.0, f"SCORE OUT OF BOUNDS: {score} from EmbeddingScorer in case {name}"
+    for p, g in edge_cases:
+        score = scorer.score(p, g)
+        check_bound(score, "EmbeddingScorer", "score", f"p={p}, g={g}")
+
+def test_extreme_numerical_bounds():
+    from utils import safe_score
+
+    extreme_inputs = [
+        0, 1, -1, 0.0, 1.0, -0.0, 
+        99999999999, -99999999999,
+        np.inf, -np.inf, np.nan,
+        None
+    ]
+
+    for val in extreme_inputs:
+        score = safe_score(val)
+        assert 0.0 < score < 1.0, f"SCORE OUT OF BOUNDS: {score} from safe_score with input {val}"

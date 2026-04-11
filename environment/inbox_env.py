@@ -17,6 +17,7 @@ from environment.action_space import validate_action
 from environment.email_loader import EmailLoader
 from environment.state import EpisodeState
 from models import EmailObservation, EmailReward, EpisodeState as StateModel
+from utils import safe_score
 
 
 class InboxEnv(gym.Env):
@@ -301,7 +302,7 @@ class InboxEnv(gym.Env):
     def _get_reward_engine(self):
         """Lazy-load the reward engine."""
         if self._reward_engine is None:
-            from rewards.reward_engine import RewardEngine, _strict
+            from rewards.reward_engine import RewardEngine
 
             self._reward_engine = RewardEngine()
         return self._reward_engine
@@ -325,11 +326,11 @@ class InboxEnv(gym.Env):
         steps = max(self._state.current_step, 1)  # avoid div-by-zero
         # Strictly clip the mean step reward to prevent exactly 0.0 or 1.0
         # which can occur if steps is large and reward is small, or sum is exact.
-        mean_step = _strict(self._state.total_reward / steps)
+        mean_step = safe_score(self._state.total_reward / steps)
         
         # Also ensure normalized components are strictly safe
         norm_breakdown = {
-            k: _strict(v / steps) for k, v in self._state.reward_breakdown.items()
+            k: safe_score(v / steps) for k, v in self._state.reward_breakdown.items()
         }
 
         return {

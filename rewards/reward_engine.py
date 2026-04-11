@@ -16,30 +16,7 @@ from typing import Any
 from rewards.embedding_scorer import EmbeddingScorer
 from rewards.penalty_system import PenaltySystem
 
-# ---------------------------------------------------------------------------
-# Strict-open-interval helper
-# ---------------------------------------------------------------------------
-# HARD REQUIREMENT: every grader score must be strictly between 0 and 1.
-# The hackathon validator REJECTS exactly 0.0 or 1.0.
-# Valid range: (0.01, 0.99) — safe margin above the hard floor/ceiling.
-SCORE_MIN = 0.01
-SCORE_MAX = 0.99
-
-
-def safe_score(value) -> float:
-    """Clamp *value* into the strictly-open interval (0.01, 0.99).
-
-    HARD REQUIREMENT: score must be strictly between 0 and 1.
-    Handles None, NaN, bool, and any numeric type.
-    NEVER returns exactly 0.0 or 1.0 — satisfies the hackathon hard requirement.
-    """
-    if value is None or value != value:  # handles None and NaN
-        return 0.5
-    return max(0.01, min(0.99, float(value)))
-
-
-# Keep _strict as an alias so existing imports don't break
-_strict = safe_score
+from utils import safe_score
 
 
 class RewardEngine:
@@ -130,13 +107,13 @@ class RewardEngine:
         total = (raw + 1.0) / 2.0
 
         # HARD REQUIREMENT: clip to [0.001, 0.999] — 0.0 and 1.0 are rejected
-        total = _strict(total)
+        total = safe_score(total)
 
         breakdown = {
-            "intent": round(_strict(intent_score), 4),
-            "priority": round(_strict(priority_score), 4),
-            "action": round(_strict(action_score), 4),
-            "response": round(_strict(response_score), 4),
+            "intent": round(safe_score(intent_score), 4),
+            "priority": round(safe_score(priority_score), 4),
+            "action": round(safe_score(action_score), 4),
+            "response": round(safe_score(response_score), 4),
             "penalty": round(penalty, 4), # Penalty remains raw for info, but total is strict
             "total": round(total, 4),
         }

@@ -14,26 +14,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# HARD REQUIREMENT: every grader score must be strictly between 0 and 1.
-# Hackathon validator REJECTS exactly 0.0 or 1.0.  Valid range: (0.01, 0.99).
-_SCORE_MIN = 0.01
-_SCORE_MAX = 0.99
-
-
-def safe_score(value) -> float:
-    """Clamp *value* into the strictly-open interval (0.01, 0.99).
-
-    HARD REQUIREMENT: score must be strictly between 0 and 1.
-    Handles None, NaN, bool, and any numeric type.
-    NEVER returns exactly 0.0 or 1.0 — satisfies the hackathon hard requirement.
-    """
-    if value is None or value != value:  # handles None and NaN
-        return 0.5
-    return max(0.01, min(0.99, float(value)))
-
-
-# Keep _strict as an alias so existing imports don't break
-_strict = safe_score
+from utils import safe_score
 
 # ---------------------------------------------------------------------------
 # Lazy model loader (avoids slow import on module load)
@@ -147,7 +128,7 @@ class EmbeddingScorer:
         """Simple token-overlap heuristic (Jaccard-ish)."""
         cand_tokens = set(candidate.lower().split())
         if not cand_tokens:
-            return _strict(0.0)
+            return safe_score(0.0)
 
         best = 0.0
         for ref in references:

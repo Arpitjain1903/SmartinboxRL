@@ -18,9 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from rewards.reward_engine import RewardEngine, safe_score, _strict as _re_strict
-from rewards.embedding_scorer import EmbeddingScorer, safe_score as _es_safe_score, _strict as _es_strict
+from rewards.reward_engine import RewardEngine
+from rewards.embedding_scorer import EmbeddingScorer
 from rewards.penalty_system import PenaltySystem
+from utils import safe_score
 
 
 # ===========================================================================
@@ -130,7 +131,7 @@ def grade_composite(email: dict, action: dict, log: list[str]) -> float:
     """
     engine = RewardEngine()
     score, _ = engine.compute(email, action, action_log=log)
-    return score
+    return safe_score(score)
 
 
 # ===========================================================================
